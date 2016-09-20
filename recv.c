@@ -85,8 +85,10 @@ void network_recv_task() {
         // Parse the JSON into objects.
         // TODO: Parse from JSON.
         recv_json_length = jsmn_parse(&recv_parser, buffer.buff, buffer.length, recv_tokens, sizeof(recv_tokens)/sizeof(recv_tokens[0]));
-        if(recv_json_length < 0)
+        if(recv_json_length <= 0)
         {
+             message.type = NR_INVALID_ERROR;
+             processing_add_recvmsg(&message);
              SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
              continue;
         }
@@ -153,7 +155,8 @@ void network_recv_task() {
                      }
                      else
                      {
-                         SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                         message.type = NR_INVALID_ERROR;
+                         processing_add_recvmsg(&message);
                      }
                 } break;
                 
@@ -184,12 +187,14 @@ void network_recv_task() {
                                                }
                                                else
                                                {
-                                                   SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                                                   message.type = NR_INVALID_ERROR;
+                                                   processing_add_recvmsg(&message);
                                                }
                                            }
                                            else
                                            {
-                                               SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                                               message.type = NR_INVALID_ERROR;
+                                               processing_add_recvmsg(&message);
                                            }
                                        }
                                        message.data.path.points.buff = recv_point_ring_buffers[recv_ring_buffer_pos];
@@ -201,30 +206,38 @@ void network_recv_task() {
                                    }
                                    else
                                    {
-                                       SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                                       message.type = NR_INVALID_ERROR;
+                                       processing_add_recvmsg(&message);
                                    }
                                }
                                else
                                {
-                                   SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                                  message.type = NR_INVALID_ERROR;
+                                  processing_add_recvmsg(&message);
                                }
                            }
                            else
                            {
-                               SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
                            }
                         }
                         else
                         {
-                            SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);   
+                           message.type = NR_INVALID_ERROR;
+                           processing_add_recvmsg(&message);   
                         }
                     }
                     else
                     {
-                         SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                        message.type = NR_INVALID_ERROR;
+                        processing_add_recvmsg(&message);
                     }
                 } break;
-            }
+                
+                default:
+                    break;
+            }//end of switch
         }
       // Assume the object is a stat query.
     }

@@ -23,6 +23,7 @@ typedef enum {
     NR_ULTRA_SENSOR,
     NR_PATH_GRAB_FINISH,
     NR_STOP_ACK,
+    NR_INVALID_ERROR,
 } NRType;
 
 typedef union {
