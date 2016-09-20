@@ -18,4 +18,8 @@ typedef struct {
     char dummy;
 } MSGQueryStats;
 
+typedef struct {
+    PointBuffer points;
+}MSGPath;
+
 #endif

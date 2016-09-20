@@ -11,11 +11,18 @@
 #include "common.h"
 
 typedef enum {
-    NR_QUERY_STATS
+    NR_QUERY_STATS,
+    NR_GRABBER_GRABBING,
+    NR_GRABBER_LIFTING,
+    NR_GRABBER_GRABBED,
+    NR_GRABBER_LIFTED,
+    NR_PATH,
+    NR_STOP,
 } NRType;
 
 typedef union {
     MSGQueryStats query_stats;
+    MSGPath path;
 } NRUnion;
 
 typedef struct {

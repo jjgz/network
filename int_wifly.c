@@ -18,7 +18,7 @@ uint16_t crc, crc_byte;
 typedef enum {SEQ_INIT, SEQ_CRC, SEQ_LENGTH, SEQ_MSG} SEQUENCE_STATE;
 SEQUENCE_STATE sequence_state;
 
-char global_buffers[16][256];
+char global_buffers[16][1024];
 unsigned global_buffer_ring_pos;
 
 QueueHandle_t int_wifly_queue;
