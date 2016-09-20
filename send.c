@@ -27,6 +27,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "int_wifly.h"
 #include "int_adc.h"
 #include "debug.h"
+#include "processing.h"
 #include <stdio.h>
 
 #define NETWORK_SEND_QUEUE_LEN 16
@@ -78,7 +79,8 @@ void network_send_task() {
             case NS_NETSTATS: {
                 MSGNetstats *netstats = &message.data.netstats;
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"Netstats\":{\"myName\":\"Sensor\",\"numGoodMessagesRecved\":%d,\"numCommErrors\":%d,\"numJSONRequestsRecved\":%d,\"numJSONResponsesRecved\":%d,\"numJSONRequestsSent\":%d,\"numJSONResponsesSent\":%d}}",
+                buffer.length = sprintf(messagebuff, "{\"Netstats\":{\"myName\":\"%s\",\"numGoodMessagesRecved\":%d,\"numCommErrors\":%d,\"numJSONRequestsRecved\":%d,\"numJSONResponsesRecved\":%d,\"numJSONRequestsSent\":%d,\"numJSONResponsesSent\":%d}}",
+                        MY_NAME,
                         netstats->numGoodMessagesRecved,
                         netstats->numCommErrors,
                         netstats->numJSONRequestsRecved,
