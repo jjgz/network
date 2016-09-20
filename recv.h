@@ -18,6 +18,11 @@ typedef enum {
     NR_GRABBER_LIFTED,
     NR_PATH,
     NR_STOP,
+    NR_ADC,
+    NR_ROTATION,
+    NR_ULTRA_SENSOR,
+    NR_PATH_GRAB_FINISH,
+    NR_STOP_ACK,
 } NRType;
 
 typedef union {

@@ -41,9 +41,14 @@ const char recv_grabber_grabbing[] = "ConfirmGrabberGrabbing";
 const char recv_grabber_lifting[] = "ConfirmGrabberLifting";
 const char recv_grabber_grabbed[] = "ConfirmGrabberGrabbed";
 const char recv_grabber_lifted[] = "ConfirmGrabberLifted";
-const char recv_path[] = "PATH";
-const char recv_stop[] = "STOP";
+const char recv_path[] = "Path";
+const char recv_stop[] = "Stop";
 const char recv_points[] = "points";
+const char recv_adc_sample[] = "AdcReading";
+const char recv_rotation[] = "RotationTick";
+const char recv_ultra_sensor[] = "UltraSensor";
+const char recv_path_grab_finish[] = "GrabberPathAndGrabFinish";
+const char recv_stop_ack[] = "StopAck";
 Point recv_point_ring_buffers[PROCESSING_QUEUE_LEN+2][20];
 unsigned recv_ring_buffer_pos;
 
@@ -134,6 +139,18 @@ void network_recv_task() {
                          message.type = NR_STOP;
                          processing_add_recvmsg(&message);
                      }
+                     else if(cmp_str_token(recv_path_grab_finish, 0))
+                     {
+                         //debug_loc(DEBUG_RECV_LIFTING);
+                         message.type = NR_PATH_GRAB_FINISH;
+                         processing_add_recvmsg(&message);
+                     }
+                     else if(cmp_str_token(recv_stop_ack, 0))
+                     {
+                         //debug_loc(DEBUG_RECV_LIFTING);
+                         message.type = NR_STOP_ACK;
+                         processing_add_recvmsg(&message);
+                     }
                      else
                      {
                          SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
@@ -196,7 +213,7 @@ void network_recv_task() {
                            {
                                SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                            }
-                        }   
+                        }
                         else
                         {
                             SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);   
