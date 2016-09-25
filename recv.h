@@ -10,6 +10,8 @@
 #include "buffer.h"
 #include "common.h"
 
+#define DBG_LENGTH 24
+
 typedef enum {
     NR_QUERY_STATS,
     NR_GRABBER_GRABBING,
@@ -24,6 +26,8 @@ typedef enum {
     NR_PATH_GRAB_FINISH,
     NR_STOP_ACK,
     NR_INVALID_ERROR,
+    NR_HELLO_RESPONSE,
+    NR_REQ_NAME,
 } NRType;
 
 typedef union {
@@ -35,7 +39,6 @@ typedef struct {
     NRType type;
     NRUnion data;
 } NRMessage;
-
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
 
 void network_recv_init();

@@ -35,20 +35,6 @@ QueueHandle_t network_recv_queue;
 
 jsmn_parser recv_parser;
 jsmntok_t recv_tokens[64];
-const char recv_heartbeat[] = "Heartbeat";
-const char recv_req_netstats[] = "RequestNetstats";
-const char recv_grabber_grabbing[] = "ConfirmGrabberGrabbing";
-const char recv_grabber_lifting[] = "ConfirmGrabberLifting";
-const char recv_grabber_grabbed[] = "ConfirmGrabberGrabbed";
-const char recv_grabber_lifted[] = "ConfirmGrabberLifted";
-const char recv_path[] = "Path";
-const char recv_stop[] = "Stop";
-const char recv_points[] = "points";
-const char recv_adc_sample[] = "AdcReading";
-const char recv_rotation[] = "RotationTick";
-const char recv_ultra_sensor[] = "UltraSensor";
-const char recv_path_grab_finish[] = "GrabberPathAndGrabFinish";
-const char recv_stop_ack[] = "StopAck";
 Point recv_point_ring_buffers[PROCESSING_QUEUE_LEN+2][20];
 unsigned recv_ring_buffer_pos;
 
@@ -99,7 +85,12 @@ void network_recv_task() {
             {
                 case JSMN_STRING:
                 {
-                     int base_str_len = recv_tokens[0].end - recv_tokens[0].start;
+                    const char recv_req_netstats[] = "RequestNetstats";
+                    const char recv_adc_sample[] = "AdcReading";
+                    const char recv_heartbeat[] = "Heartbeat"; 
+                    const char recv_req_name[] = "ReqName";
+                    
+                    int base_str_len = recv_tokens[0].end - recv_tokens[0].start;
                      if(cmp_str_token(recv_heartbeat, 0))
                      {
                          //dont do anything on a heartbeat
@@ -111,46 +102,9 @@ void network_recv_task() {
                          message.type = NR_QUERY_STATS;
                          processing_add_recvmsg(&message);
                      }
-                     else if(cmp_str_token(recv_grabber_grabbing, 0))
+                     else if(cmp_str_token(recv_req_name, 0))
                      {
-                         //debug_loc(DEBUG_RECV_GRABBING);
-                         message.type = NR_GRABBER_GRABBING;
-                         processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_grabber_lifting, 0))
-                     {
-                         //debug_loc(DEBUG_RECV_LIFTING);
-                         message.type = NR_GRABBER_LIFTING;
-                         processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_grabber_grabbed, 0))
-                     {
-                         //debug_loc(DEBUG_RECV_GRABBING);
-                         message.type = NR_GRABBER_GRABBED;
-                         processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_grabber_lifted, 0))
-                     {
-                         //debug_loc(DEBUG_RECV_LIFTING);
-                         message.type = NR_GRABBER_LIFTED;
-                         processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_stop, 0))
-                     {
-                         //debug_loc(DEBUG_RECV_LIFTING);
-                         message.type = NR_STOP;
-                         processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_path_grab_finish, 0))
-                     {
-                         //debug_loc(DEBUG_RECV_LIFTING);
-                         message.type = NR_PATH_GRAB_FINISH;
-                         processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_stop_ack, 0))
-                     {
-                         //debug_loc(DEBUG_RECV_LIFTING);
-                         message.type = NR_STOP_ACK;
+                         message.type = NR_REQ_NAME;
                          processing_add_recvmsg(&message);
                      }
                      else
@@ -162,6 +116,8 @@ void network_recv_task() {
                 
                 case JSMN_OBJECT:
                 {
+                    const char recv_path[] = "Path";
+                    const char recv_points[] = "points";
                     if(recv_tokens[1].type == JSMN_STRING)
                     {
                         int base_str_len = recv_tokens[1].end - recv_tokens[1].start;
