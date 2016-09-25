@@ -43,7 +43,7 @@ unsigned choose_buff;
 void network_send_add_message(NSMessage *message) {
     xQueueSendToBack(network_send_queue, message, portMAX_DELAY);
 }
-
+/*
 void network_send_add_message_isr(NSMessage *message) {
     BaseType_t higher_priority_task_woken = pdFALSE;
     // Attempt add the buffer from the isr to the queue.
@@ -56,7 +56,7 @@ void network_send_add_message_isr(NSMessage *message) {
         // NOTE: LD4 conflicts with SDA2 (I2C).
         SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
     }
-}
+}*/
 
 void next_messagebuff() {
     messagebuff = messagebuffs[(choose_buff++) % TOTAL_MESSAGE_BUFFS];
@@ -107,6 +107,74 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             } break;
+            case NS_REQUEST_TO_GEO:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = strlen("\"RequestGeordonHello\"");
+                if(buffer.length > 0){
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                }
+                else{
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            } break;
+            case NS_SEND_NAME_JOSH:
+            {
+                buffer.buff = "\"NameJosh\"";
+                buffer.length = strlen(buffer.buff);
+                if(buffer.length > 0)
+                {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                }
+                else
+                {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_SEND_NAME_ZAC:
+            {
+                buffer.buff = "\"NameZach\"";
+                buffer.length = strlen(buffer.buff);
+                if(buffer.length > 0)
+                {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                }
+                else
+                {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;            
+            case NS_SEND_NAME_GEO:
+            {
+                buffer.buff = "\"NameGeordon\"";
+                buffer.length = strlen(buffer.buff);
+                if(buffer.length > 0)
+                {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                }
+                else
+                {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_SEND_NAME_JOE:
+            {
+                buffer.buff = "\"NameJoe\"";
+                buffer.length = strlen(buffer.buff);
+                if(buffer.length > 0)
+                {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                }
+                else
+                {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
         }
     }
     
