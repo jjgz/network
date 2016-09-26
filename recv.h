@@ -28,6 +28,8 @@ typedef enum {
     NR_INVALID_ERROR,
     NR_HELLO_RESPONSE,
     NR_REQ_NAME,
+    NR_HELLO_JOSH,
+    NR_REQ_HELLO_GEORDON_JOSH,
 } NRType;
 
 typedef union {

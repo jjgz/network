@@ -107,13 +107,12 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             } break;
-            case NS_REQUEST_TO_GEO:
+            case NS_REQ_HELLO_GEORDON_JOSH:
             {
-                buffer.buff = messagebuff;
-                buffer.length = strlen("\"RequestGeordonHello\"");
+                buffer.buff = "\"RequestGeordonHello\"";
+                buffer.length = strlen(buffer.buff);
                 if(buffer.length > 0){
                     wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
                 }
                 else{
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
@@ -126,7 +125,6 @@ void network_send_task() {
                 if(buffer.length > 0)
                 {
                     wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
                 }
                 else
                 {
@@ -140,7 +138,6 @@ void network_send_task() {
                 if(buffer.length > 0)
                 {
                     wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
                 }
                 else
                 {
@@ -154,7 +151,6 @@ void network_send_task() {
                 if(buffer.length > 0)
                 {
                     wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
                 }
                 else
                 {
@@ -168,7 +164,19 @@ void network_send_task() {
                 if(buffer.length > 0)
                 {
                     wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
+                }
+                else
+                {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_HELLO_JOSH:
+            {
+                buffer.buff = "\"HelloJosh\"";
+                buffer.length = strlen(buffer.buff);
+                if(buffer.length > 0)
+                {
+                    wifly_int_send_buffer(&buffer);
                 }
                 else
                 {

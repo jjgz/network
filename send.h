@@ -13,11 +13,12 @@
 typedef enum {
     NS_NETSTATS,
     NS_ADC_READING,
-    NS_REQUEST_TO_GEO,
     NS_SEND_NAME_JOSH,
     NS_SEND_NAME_ZAC,
     NS_SEND_NAME_GEO,
     NS_SEND_NAME_JOE,
+    NS_HELLO_JOSH,
+    NS_REQ_HELLO_GEORDON_JOSH,
 } NSType;
 
 typedef union {
