@@ -109,7 +109,7 @@ void network_send_task() {
             } break;
             case NS_REQ_HELLO_GEORDON_JOSH:
             {
-                buffer.buff = "\"RequestGeordonHello\"";
+                buffer.buff = "\"RequestAHelloFromGeordonToJosh\"";
                 buffer.length = strlen(buffer.buff);
                 if(buffer.length > 0){
                     wifly_int_send_buffer(&buffer);
