@@ -85,44 +85,24 @@ void network_recv_task() {
             {
                 case JSMN_STRING:
                 {
-                    const char recv_req_netstats[] = "RequestNetstats";
-                    const char recv_adc_sample[] = "AdcReading";
-                    const char recv_heartbeat[] = "Heartbeat"; 
+                    const char recv_req_netstats[] = "ReqNetstats";
+                    const char recv_heartbeat[] = "Heartbeat";
                     const char recv_req_name[] = "ReqName";
-                    const char recv_hello_josh[] = "HelloJosh"; 
-                    const char recv_req_hello_geordon_josh[] = "RequestAHelloFromGeordonToJosh";
-                    
+
                     int base_str_len = recv_tokens[0].end - recv_tokens[0].start;
-                     if(cmp_str_token(recv_heartbeat, 0))
-                     {
-                     }
-                     else if(cmp_str_token(recv_req_netstats, 0))
-                     {
+                     if(cmp_str_token(recv_heartbeat, 0)) {
+                     } else if(cmp_str_token(recv_req_netstats, 0)) {
                          message.type = NR_QUERY_STATS;
                          processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_hello_josh, 0))
-                     {
-                         message.type = NR_HELLO_JOSH;
-                         processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_req_hello_geordon_josh, 0))
-                     {
-                         message.type = NR_REQ_HELLO_GEORDON_JOSH;
-                         processing_add_recvmsg(&message);
-                     }
-                     else if(cmp_str_token(recv_req_name, 0))
-                     {
+                     } else if(cmp_str_token(recv_req_name, 0)) {
                          message.type = NR_REQ_NAME;
                          processing_add_recvmsg(&message);
-                     }
-                     else
-                     {
+                     } else {
                          message.type = NR_INVALID_ERROR;
                          processing_add_recvmsg(&message);
                      }
                 } break;
-                
+
                 case JSMN_OBJECT:
                 {
                     const char recv_path[] = "Path";
@@ -130,6 +110,7 @@ void network_recv_task() {
                     if(recv_tokens[1].type == JSMN_STRING)
                     {
                         int base_str_len = recv_tokens[1].end - recv_tokens[1].start;
+                        /*
                         if(cmp_str_token(recv_path, 1))//path
                         {
                          //debug_loc(DEBUG_RECV_GRABBING)
@@ -190,8 +171,8 @@ void network_recv_task() {
                         else
                         {
                            message.type = NR_INVALID_ERROR;
-                           processing_add_recvmsg(&message);   
-                        }
+                           processing_add_recvmsg(&message);
+                        }*/
                     }
                     else
                     {
@@ -199,7 +180,7 @@ void network_recv_task() {
                         processing_add_recvmsg(&message);
                     }
                 } break;
-                
+
                 default:
                     break;
             }//end of switch

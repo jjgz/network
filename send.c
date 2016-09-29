@@ -95,29 +95,6 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             } break;
-            case NS_ADC_READING: {
-                MSGAdcReading *adc_reading = &message.data.adc_reading;
-                buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"AdcReading\":{\"reading\":%d}}", adc_reading->reading);
-                
-                if (buffer.length > 0) {
-                    wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
-                } else {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
-            } break;
-            case NS_REQ_HELLO_GEORDON_JOSH:
-            {
-                buffer.buff = "\"RequestAHelloFromGeordonToJosh\"";
-                buffer.length = strlen(buffer.buff);
-                if(buffer.length > 0){
-                    wifly_int_send_buffer(&buffer);
-                }
-                else{
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
-            } break;
             case NS_SEND_NAME_JOSH:
             {
                 buffer.buff = "\"NameJosh\"";
@@ -160,19 +137,6 @@ void network_send_task() {
             case NS_SEND_NAME_JOE:
             {
                 buffer.buff = "\"NameJoe\"";
-                buffer.length = strlen(buffer.buff);
-                if(buffer.length > 0)
-                {
-                    wifly_int_send_buffer(&buffer);
-                }
-                else
-                {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
-            }break;
-            case NS_HELLO_JOSH:
-            {
-                buffer.buff = "\"HelloJosh\"";
                 buffer.length = strlen(buffer.buff);
                 if(buffer.length > 0)
                 {

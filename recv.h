@@ -13,28 +13,13 @@
 #define DBG_LENGTH 24
 
 typedef enum {
-    NR_QUERY_STATS,
-    NR_GRABBER_GRABBING,
-    NR_GRABBER_LIFTING,
-    NR_GRABBER_GRABBED,
-    NR_GRABBER_LIFTED,
-    NR_PATH,
-    NR_STOP,
-    NR_ADC,
-    NR_ROTATION,
-    NR_ULTRA_SENSOR,
-    NR_PATH_GRAB_FINISH,
-    NR_STOP_ACK,
     NR_INVALID_ERROR,
-    NR_HELLO_RESPONSE,
+    NR_QUERY_STATS,
     NR_REQ_NAME,
-    NR_HELLO_JOSH,
-    NR_REQ_HELLO_GEORDON_JOSH,
 } NRType;
 
 typedef union {
-    MSGQueryStats query_stats;
-    MSGPath path;
+    bool dummy;
 } NRUnion;
 
 typedef struct {

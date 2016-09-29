@@ -10,16 +10,4 @@ typedef struct {
     unsigned numJSONResponsesSent;
 } MSGNetstats;
 
-typedef struct {
-    unsigned reading;
-} MSGAdcReading;
-
-typedef struct {
-    char dummy;
-} MSGQueryStats;
-
-typedef struct {
-    PointBuffer points;
-}MSGPath;
-
 #endif
