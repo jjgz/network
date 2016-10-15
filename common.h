@@ -10,4 +10,8 @@ typedef struct {
     unsigned numJSONResponsesSent;
 } MSGNetstats;
 
+typedef struct {
+    float x, y, v, angle, av;
+} MSGWorld;
+
 #endif
