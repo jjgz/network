@@ -254,7 +254,7 @@ void jsmn_prim(NRMessage msg, CharBuffer buff)
 {
     char *point_string = buff.buff + recv_tokens[2].start;
     long xy = atol(point_string);
-    msg.data.points.x = xy % 128;
-    msg.data.points.y = xy / 128;
+    msg.data.point.x = xy % 128;
+    msg.data.point.y = xy / 128;
     processing_add_recvmsg(&msg);
 }

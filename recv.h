@@ -35,7 +35,7 @@ typedef enum {
 
 typedef struct {
     bool dummy;
-    MSGPoints points;
+    MSGPoint point;
 } NRUnion;
 
 typedef struct {
@@ -46,5 +46,6 @@ bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
 
 void network_recv_init();
 void network_recv_task();
+void jsmn_prim(NRMessage msg, CharBuffer buff);
 
 #endif /* _RECV_H */
