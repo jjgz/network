@@ -88,6 +88,16 @@ void network_recv_task() {
                     const char recv_req_netstats[] = "ReqNetstats";
                     const char recv_heartbeat[] = "Heartbeat";
                     const char recv_req_name[] = "ReqName";
+                    const char recv_req_movement[] = "ReqMovement";
+                    const char recv_req_joe_points[] = "JoeReqPoints";
+                    const char recv_req_josh_points[] = "JoshReqPoints";
+                    const char recv_req_stopped[] = "ReqStopped";
+                    const char recv_req_in_position[] = "ReqInPosition";
+                    const char recv_req_EdgeDetect[] = "ReqEdgeDetect";
+                    const char recv_req_EdgeDropped[] = "ReqEdgeDropped";
+                    const char recv_req_Distance[] = "ReqDistance";
+                    const char recv_req_Grabbed[] = "ReqGrabbed";
+                    const char recv_req_Dropped[] = "ReqDropped";
 
                     int base_str_len = recv_tokens[0].end - recv_tokens[0].start;
                      if(cmp_str_token(recv_heartbeat, 0)) {
@@ -97,7 +107,38 @@ void network_recv_task() {
                      } else if(cmp_str_token(recv_req_name, 0)) {
                          message.type = NR_REQ_NAME;
                          processing_add_recvmsg(&message);
-                     } else {
+                     } else if(cmp_str_token(recv_req_movement, 0)) {
+                         message.type = NR_REQ_MOVEMENT;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_joe_points, 0)) {
+                         message.type = NR_REQ_JOE_POINTS;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_josh_points, 0)) {
+                         message.type = NR_REQ_JOSH_POINTS;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_stopped, 0)) {
+                         message.type = NR_REQ_STOPPED;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_in_position, 0)) {
+                         message.type = NR_REQ_IN_POS;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_EdgeDetect, 0)) {
+                         message.type = NR_REQ_EDGE_DETECT;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_EdgeDropped, 0)) {
+                         message.type = NR_REQ_EDGE_DROPPED;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_Distance, 0)) {
+                         message.type = NR_REQ_DISTANCE;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_Grabbed, 0)) {
+                         message.type = NR_REQ_GRABBED;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token(recv_req_Dropped, 0)) {
+                         message.type = NR_REQ_DROPPED;
+                         processing_add_recvmsg(&message);
+                     }
+                     else {
                          message.type = NR_INVALID_ERROR;
                          processing_add_recvmsg(&message);
                      }
@@ -106,62 +147,82 @@ void network_recv_task() {
                 case JSMN_OBJECT:
                 {
                     const char recv_path[] = "Path";
-                    const char recv_points[] = "points";
                     if(recv_tokens[1].type == JSMN_STRING)
                     {
                         int base_str_len = recv_tokens[1].end - recv_tokens[1].start;
-                        /*
-                        if(cmp_str_token(recv_path, 1))//path
+                        
+                        if(cmp_str_token("Movement", 1))//path
                         {
                          //debug_loc(DEBUG_RECV_GRABBING)
                            if(recv_tokens[2].type == JSMN_OBJECT)
                            {
-                               if(cmp_str_token(recv_points, 3)) //if points
-                               {
-                                   if(recv_tokens[4].type == JSMN_ARRAY)
-                                   {
-                                       int point_amount = recv_tokens[4].size/3;
-                                       int i;
-                                       for(i = 0; i < point_amount;i++)
-                                       {
-                                           if(recv_tokens[5+i*3].type == JSMN_ARRAY)
-                                           {
-                                               if(recv_tokens[6+i*3].type == JSMN_PRIMITIVE && recv_tokens[7+i*3].type == JSMN_PRIMITIVE)
-                                               {
-                                                   recv_point_ring_buffers[recv_ring_buffer_pos][i].x = atof(buffer.buff + recv_tokens[6+i*3].start);
-                                                   recv_point_ring_buffers[recv_ring_buffer_pos][i].y = atof(buffer.buff + recv_tokens[7+i*3].start);
-                                               }
-                                               else
-                                               {
-                                                   message.type = NR_INVALID_ERROR;
-                                                   processing_add_recvmsg(&message);
-                                               }
-                                           }
-                                           else
-                                           {
-                                               message.type = NR_INVALID_ERROR;
-                                               processing_add_recvmsg(&message);
-                                           }
-                                       }
-                                       message.data.path.points.buff = recv_point_ring_buffers[recv_ring_buffer_pos];
-                                       message.data.path.points.length = point_amount;
-                                       message.type = NR_PATH;
-                                       recv_ring_buffer_pos++;
-                                       recv_ring_buffer_pos %= PROCESSING_QUEUE_LEN+2;
-                                       processing_add_recvmsg(&message);
-                                   }
-                                   else
-                                   {
-                                       message.type = NR_INVALID_ERROR;
-                                       processing_add_recvmsg(&message);
-                                   }
-                               }
-                               else
-                               {
-                                  message.type = NR_INVALID_ERROR;
-                                  processing_add_recvmsg(&message);
-                               }
+                               
                            }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("JF", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_JF; 
+                               jsmn_prim(message, buffer);   
+                           }
+                           
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("JE", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_JE; 
+                               jsmn_prim(message, buffer);   
+                           }
+                           
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("CF", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_CF; 
+                               jsmn_prim(message, buffer);   
+                           }
+                           
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("CE", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_CE; 
+                               jsmn_prim(message, buffer);   
+                           }
+                           
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("CT", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_CT; 
+                               jsmn_prim(message, buffer);   
+                           }
+                           
                            else
                            {
                               message.type = NR_INVALID_ERROR;
@@ -172,7 +233,7 @@ void network_recv_task() {
                         {
                            message.type = NR_INVALID_ERROR;
                            processing_add_recvmsg(&message);
-                        }*/
+                        }
                     }
                     else
                     {
@@ -187,4 +248,13 @@ void network_recv_task() {
         }
       // Assume the object is a stat query.
     }
+}
+
+void jsmn_prim(NRMessage msg, CharBuffer buff)
+{
+    char *point_string = buff.buff + recv_tokens[2].start;
+    long xy = atol(point_string);
+    msg.data.points.x = xy % 128;
+    msg.data.points.y = xy / 128;
+    processing_add_recvmsg(&msg);
 }

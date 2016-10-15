@@ -16,10 +16,26 @@ typedef enum {
     NR_INVALID_ERROR,
     NR_QUERY_STATS,
     NR_REQ_NAME,
+            NR_REQ_MOVEMENT,
+            NR_REQ_JOSH_POINTS,
+            NR_REQ_JOE_POINTS,
+            NR_REQ_STOPPED,
+            NR_REQ_IN_POS,
+            NR_REQ_EDGE_DETECT,
+            NR_REQ_EDGE_DROPPED,
+            NR_REQ_DISTANCE,
+            NR_REQ_GRABBED,
+            NR_REQ_DROPPED,
+			NR_JF,
+			NR_JE,
+			NR_CF,
+			NR_CE,
+			NR_CT,
 } NRType;
 
-typedef union {
+typedef struct {
     bool dummy;
+    MSGPoints points;
 } NRUnion;
 
 typedef struct {
