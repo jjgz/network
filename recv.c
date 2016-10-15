@@ -156,7 +156,32 @@ void network_recv_task() {
                          //debug_loc(DEBUG_RECV_GRABBING)
                            if(recv_tokens[2].type == JSMN_OBJECT)
                            {
-                               
+                               int i;
+                               for(i = 0; i < 5; i++)
+                               {
+                                   if(recv_tokens[3+i*2].type != JSMN_STRING ||
+                                           recv_tokens[4+i*2].type != JSMN_PRIMITIVE)
+                                   {
+                                       message.type = NR_INVALID_ERROR;
+                                       processing_add_recvmsg(&message);
+                                       continue;
+                                   }   
+                               }
+                               if(!cmp_str_token("x", 3) || !cmp_str_token("y", 5) || !cmp_str_token("v", 7) || !cmp_str_token("angle", 9) || !cmp_str_token("av", 11))
+                               {
+                                    message.type = NR_INVALID_ERROR;
+                                    processing_add_recvmsg(&message);                                    
+                               }
+                               else
+                               {
+                                    message.type = NR_MOVEMENT;  
+                                    message.movement.x = atof(buffer.buff + recv_tokens[4].start);
+                                    message.movement.y = atof(buffer.buff + recv_tokens[6].start);
+                                    message.movement.v = atof(buffer.buff + recv_tokens[8].start);
+                                    message.movement.angle = atof(buffer.buff + recv_tokens[10].start);
+                                    message.movement.av = atof(buffer.buff + recv_tokens[12].start);
+                                    processing_add_recvmsg(&message);
+                               }
                            }
                            else
                            {

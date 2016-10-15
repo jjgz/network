@@ -31,16 +31,17 @@ typedef enum {
 			NR_CF,
 			NR_CE,
 			NR_CT,
+            NR_MOVEMENT,
 } NRType;
 
-typedef struct {
-    bool dummy;
+typedef union {
     MSGPoint point;
 } NRUnion;
 
 typedef struct {
     NRType type;
     NRUnion data;
+    MSGMovement movement;
 } NRMessage;
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
 

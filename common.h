@@ -12,7 +12,7 @@ typedef struct {
 
 typedef struct {
     float x, y, v, angle, av;
-} MSGWorld;
+} MSGMovement;
 
 
 typedef struct {
