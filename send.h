@@ -43,6 +43,10 @@ typedef enum {
 
 typedef union {
     MSGNetstats netstats;
+    MSGMovement movement;
+    MSGPoint point;
+    bool answer;
+    double distance;
 } NSUnion;
 
 typedef struct {

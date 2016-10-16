@@ -43,20 +43,6 @@ unsigned choose_buff;
 void network_send_add_message(NSMessage *message) {
     xQueueSendToBack(network_send_queue, message, portMAX_DELAY);
 }
-/*
-void network_send_add_message_isr(NSMessage *message) {
-    BaseType_t higher_priority_task_woken = pdFALSE;
-    // Attempt add the buffer from the isr to the queue.
-    if (xQueueSendToBackFromISR(network_send_queue, message, &higher_priority_task_woken)) {
-        // If a higher priority task was waiting for something on the queue, switch to it.
-        portEND_SWITCHING_ISR(higher_priority_task_woken);
-    // We didn't receive a buffer.
-    } else {
-        // Indicate on LD4 that we lost a packet.
-        // NOTE: LD4 conflicts with SDA2 (I2C).
-        SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-    }
-}*/
 
 void next_messagebuff() {
     messagebuff = messagebuffs[(choose_buff++) % TOTAL_MESSAGE_BUFFS];
@@ -99,51 +85,257 @@ void network_send_task() {
             {
                 buffer.buff = "\"NameJosh\"";
                 buffer.length = strlen(buffer.buff);
-                if(buffer.length > 0)
-                {
-                    wifly_int_send_buffer(&buffer);
-                }
-                else
-                {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
+                wifly_int_send_buffer(&buffer);
             }break;
             case NS_SEND_NAME_ZAC:
             {
                 buffer.buff = "\"NameZach\"";
                 buffer.length = strlen(buffer.buff);
-                if(buffer.length > 0)
-                {
-                    wifly_int_send_buffer(&buffer);
-                }
-                else
-                {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
+                wifly_int_send_buffer(&buffer);
             }break;            
             case NS_SEND_NAME_GEO:
             {
                 buffer.buff = "\"NameGeordon\"";
                 buffer.length = strlen(buffer.buff);
-                if(buffer.length > 0)
-                {
-                    wifly_int_send_buffer(&buffer);
-                }
-                else
-                {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
+                wifly_int_send_buffer(&buffer);
             }break;
             case NS_SEND_NAME_JOE:
             {
                 buffer.buff = "\"NameJoe\"";
                 buffer.length = strlen(buffer.buff);
-                if(buffer.length > 0)
-                {
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_REQ_MOVEMENT:
+            {
+                buffer.buff = "\"ReqMovement\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_MOVEMENT:
+            {
+                MSGMovement *movement = &message.data.movement;
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"Movement\":{\"x\":%f,\"y\":%f,\"v\":%f,\"angle\":%f,\"av\":%f}}",
+                        movement->x,
+                        movement->y,
+                        movement->v,
+                        movement->angle,
+                        movement->av);
+                
+                if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
-                else
-                {
+            }break;
+            case NS_JOE_REQ_POINTS:
+            {
+                buffer.buff = "\"JoeReqPoints\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_JF:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"JF\":%d}",
+                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_JE:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"JE\":%d}",
+                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_JOSH_REQ_POINTS:
+            {
+                buffer.buff = "\"JoeReqPoints\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_CF:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"CF\":%d}",
+                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_CE:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"CE\":%d}",
+                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_CT:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"CT\":%d}",
+                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_REQ_STOPPED:
+            {
+                buffer.buff = "\"ReqStopped\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_STOPPED:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"Stopped\":%s}",
+                        message.data.answer ? "true" : "false");
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_REQ_IN_POS:
+            {
+                buffer.buff = "\"ReqInPosition\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_IN_POS:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"InPosition\":%s}",
+                        message.data.answer ? "true" : "false");
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_REQ_EDGE_DETECT:
+            {
+                buffer.buff = "\"ReqEdgeDetect\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_EDGE_DETECT:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"EdgeDetect\":%s}",
+                        message.data.answer ? "true" : "false");
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_REQ_EDGE_DROPPED:
+            {
+                buffer.buff = "\"ReqEdgeDropped\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_EDGE_DROPPED:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"EdgeDropped\":%s}",
+                        message.data.answer ? "true" : "false");
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_REQ_DISTANCE:
+            {
+                buffer.buff = "\"ReqDistance\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_DISTANCE:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"Distance\":%f}",
+                        message.data.distance);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_REQ_GRABBED:
+            {
+                buffer.buff = "\"ReqGrabbed\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_GRABBED:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"Grabbed\":%s}",
+                        message.data.answer ? "true" : "false");
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_REQ_DROPPED:
+            {
+                buffer.buff = "\"ReqDropped\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_DROPPED:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"Dropped\":%s}",
+                        message.data.answer ? "true" : "false");
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
