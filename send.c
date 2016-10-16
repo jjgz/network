@@ -87,7 +87,7 @@ void network_send_task() {
                 buffer.length = strlen(buffer.buff);
                 wifly_int_send_buffer(&buffer);
             }break;
-            case NS_SEND_NAME_ZAC:
+            case NS_SEND_NAME_ZACH:
             {
                 buffer.buff = "\"NameZach\"";
                 buffer.length = strlen(buffer.buff);
