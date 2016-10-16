@@ -174,11 +174,11 @@ void network_recv_task() {
                                else
                                {
                                     message.type = NR_MOVEMENT;  
-                                    message.movement.x = atof(buffer.buff + recv_tokens[4].start);
-                                    message.movement.y = atof(buffer.buff + recv_tokens[6].start);
-                                    message.movement.v = atof(buffer.buff + recv_tokens[8].start);
-                                    message.movement.angle = atof(buffer.buff + recv_tokens[10].start);
-                                    message.movement.av = atof(buffer.buff + recv_tokens[12].start);
+                                    message.data.movement.x = atof(buffer.buff + recv_tokens[4].start);
+                                    message.data.movement.y = atof(buffer.buff + recv_tokens[6].start);
+                                    message.data.movement.v = atof(buffer.buff + recv_tokens[8].start);
+                                    message.data.movement.angle = atof(buffer.buff + recv_tokens[10].start);
+                                    message.data.movement.av = atof(buffer.buff + recv_tokens[12].start);
                                     processing_add_recvmsg(&message);
                                }
                            }
@@ -257,7 +257,7 @@ void network_recv_task() {
                         {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_STOPPED;
-                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                               message.data.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
                               processing_add_recvmsg(&message);
                            }
                            else
@@ -270,7 +270,7 @@ void network_recv_task() {
                         {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_IN_POS;
-                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                               message.data.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
                               processing_add_recvmsg(&message);
                            }
                            else
@@ -283,7 +283,7 @@ void network_recv_task() {
                         {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_EDGE_DETECT;
-                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                               message.data.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
                               processing_add_recvmsg(&message);
                            }
                            else
@@ -296,7 +296,7 @@ void network_recv_task() {
                         {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_EDGE_DROPPED;
-                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                               message.data.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
                               processing_add_recvmsg(&message);
                            }
                            else
@@ -309,7 +309,7 @@ void network_recv_task() {
                         {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_GRABBED;
-                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                               message.data.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
                               processing_add_recvmsg(&message);
                            }
                            else
@@ -322,7 +322,7 @@ void network_recv_task() {
                         {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_DROPPED;
-                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                               message.data.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
                               processing_add_recvmsg(&message);
                            }
                            else
@@ -335,7 +335,7 @@ void network_recv_task() {
                         {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_DISTANCE;
-                               message.movement.y = atof(buffer.buff + recv_tokens[2].start);
+                               message.data.distance = atof(buffer.buff + recv_tokens[2].start);
                               processing_add_recvmsg(&message);
                            }
                            else

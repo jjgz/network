@@ -44,14 +44,14 @@ typedef enum {
 
 typedef union {
     MSGPoint point;
+    MSGMovement movement;
+	double distance;
+    bool answer;
 } NRUnion;
 
 typedef struct {
     NRType type;
     NRUnion data;
-    MSGMovement movement;
-	double distance;
-    bool answer;
 } NRMessage;
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
 
