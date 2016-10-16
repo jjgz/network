@@ -53,7 +53,6 @@ void network_send_init() {
     choose_buff = 0;
     network_send_queue = xQueueCreate(NETWORK_SEND_QUEUE_LEN, sizeof(NSMessage));
     int_adc_init();
-    DRV_ADC_Open();
 }
 
 void network_send_task() {
@@ -163,7 +162,7 @@ void network_send_task() {
             }break;
             case NS_JOSH_REQ_POINTS:
             {
-                buffer.buff = "\"JoeReqPoints\"";
+                buffer.buff = "\"JoshReqPoints\"";
                 buffer.length = strlen(buffer.buff);
                 wifly_int_send_buffer(&buffer);
             }break;
@@ -339,6 +338,20 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_TMR:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"DDebugJosh\":[%u, %u]}", message.data.tmr.tmr3, message.data.tmr.tmr4);
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+                
+            }
+            default:
+                break;
         }
     }
     

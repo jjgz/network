@@ -52,7 +52,9 @@ typedef struct {
     MSGMovement movement;
 	double distance;
     bool answer;
+    TimerDebug tmr;
 } NRMessage;
+
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
 
 void network_recv_init();

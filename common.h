@@ -20,4 +20,8 @@ typedef struct {
     uint8_t y;
 } MSGPoint;
 
+typedef struct{
+    uint32_t tmr3;
+    uint32_t tmr4;
+}TimerDebug;
 #endif
