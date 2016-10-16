@@ -146,7 +146,6 @@ void network_recv_task() {
 
                 case JSMN_OBJECT:
                 {
-                    const char recv_path[] = "Path";
                     if(recv_tokens[1].type == JSMN_STRING)
                     {
                         int base_str_len = recv_tokens[1].end - recv_tokens[1].start;
@@ -248,6 +247,97 @@ void network_recv_task() {
                                jsmn_prim(message, buffer);   
                            }
                            
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Stopped", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_STOPPED;
+                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("InPosition", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_IN_POS;
+                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("EdgeDetect", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_EDGE_DETECT;
+                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("EdgeDropped", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_EDGE_DROPPED;
+                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Grabbed", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_GRABBED;
+                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Dropped", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_DROPPED;
+                               message.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Distance", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_DISTANCE;
+                               message.movement.y = atof(buffer.buff + recv_tokens[2].start);
+                              processing_add_recvmsg(&message);
+                           }
                            else
                            {
                               message.type = NR_INVALID_ERROR;

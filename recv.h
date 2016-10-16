@@ -32,6 +32,14 @@ typedef enum {
 			NR_CE,
 			NR_CT,
             NR_MOVEMENT,
+            NR_STOPPED,
+			NR_IN_POS,
+			NR_EDGE_DETECT,
+			NR_EDGE_DROPPED,
+			NR_GRABBED,
+			NR_DROPPED,
+			NR_DISTANCE,
+			
 } NRType;
 
 typedef union {
@@ -42,6 +50,8 @@ typedef struct {
     NRType type;
     NRUnion data;
     MSGMovement movement;
+	double distance;
+    bool answer;
 } NRMessage;
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
 
