@@ -23,5 +23,7 @@ typedef struct {
 typedef struct{
     uint32_t tmr3;
     uint32_t tmr4;
+    uint32_t speed_left;
+    uint32_t speed_right;
 }TimerDebug;
 #endif

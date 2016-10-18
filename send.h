@@ -40,6 +40,7 @@ typedef enum {
     NS_REQ_DROPPED,
     NS_DROPPED,
             NS_TMR,
+            NS_PWM,
 } NSType;
 
 typedef union {

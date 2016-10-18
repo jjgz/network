@@ -338,18 +338,29 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            case NS_TMR:
+            case NS_PWM:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"DDebugJosh\":[%u, %u]}", message.data.tmr.tmr3, message.data.tmr.tmr4);
+                buffer.length = sprintf(messagebuff, "{\"PDebugJosh\":[%u, %u, %u, %u]}", message.data.tmr.speed_left, message.data.tmr.speed_right,message.data.tmr.tmr3,message.data.tmr.tmr4);
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();
                 } else {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
-                
-            }
+            }break;
+//            case NS_TMR:
+//            {
+//                buffer.buff = messagebuff;
+//                buffer.length = sprintf(messagebuff, "{\"TDebugJosh\":[%u, %u]}", message.data.tmr.tmr3, message.data.tmr.tmr4);
+//                if (buffer.length > 0) {
+//                    wifly_int_send_buffer(&buffer);
+//                    next_messagebuff();
+//                } else {
+//                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+//                }
+//                
+//            }break;
             default:
                 break;
         }
