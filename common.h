@@ -25,5 +25,7 @@ typedef struct{
     uint32_t tmr4;
     uint32_t speed_left;
     uint32_t speed_right;
+    double left_error;
+    double right_error;
 }TimerDebug;
 #endif

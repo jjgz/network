@@ -33,7 +33,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define NETWORK_SEND_QUEUE_LEN 16
 #define MESSAGE_BUF_SIZE 512
 #define TOTAL_MESSAGE_BUFFS 4
-
+rover my_rover;
 QueueHandle_t network_send_queue;
 
 char messagebuffs[TOTAL_MESSAGE_BUFFS][MESSAGE_BUF_SIZE];
@@ -82,6 +82,7 @@ void network_send_task() {
             } break;
             case NS_SEND_NAME_JOSH:
             {
+                my_rover.bools.got_name = true;
                 buffer.buff = "\"NameJosh\"";
                 buffer.length = strlen(buffer.buff);
                 wifly_int_send_buffer(&buffer);
@@ -341,7 +342,13 @@ void network_send_task() {
             case NS_PWM:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"PDebugJosh\":[%u, %u, %u, %u]}", message.data.tmr.speed_left, message.data.tmr.speed_right,message.data.tmr.tmr3,message.data.tmr.tmr4);
+                buffer.length = sprintf(messagebuff, "{\"PDebugJosh\":[%u, %u, %u, %u, %u, %u]}", 
+                        message.data.tmr.speed_left, 
+                        message.data.tmr.speed_right,
+                        message.data.tmr.tmr4,
+                        message.data.tmr.tmr3,
+                        message.data.tmr.speed_left,
+                        message.data.tmr.speed_right);
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();

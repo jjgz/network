@@ -104,6 +104,9 @@ void network_recv_task() {
                      } else if(cmp_str_token(recv_req_netstats, 0)) {
                          message.type = NR_QUERY_STATS;
                          processing_add_recvmsg(&message);
+                     } else if(cmp_str_token("ReqTestReset", 0)) {
+                         message.type = NR_TEST_RESET;
+                         processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_name, 0)) {
                          message.type = NR_REQ_NAME;
                          processing_add_recvmsg(&message);
@@ -336,6 +339,34 @@ void network_recv_task() {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_DISTANCE;
                                message.data.distance = atof(buffer.buff + recv_tokens[2].start);
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("TestRotate", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_TEST_ROTATE;
+                               message.data.rotate_val = atoi(buffer.buff + recv_tokens[2].start);
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("TestMove", 1))
+                        {
+                            
+                           SYS_PORTS_PinWrite(0, PORT_CHANNEL_C, PORTS_BIT_POS_1, 1);
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_TEST_MOVE;
+                               message.data.move_val = atoi(buffer.buff + recv_tokens[2].start);
                               processing_add_recvmsg(&message);
                            }
                            else
