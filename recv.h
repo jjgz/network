@@ -39,14 +39,18 @@ typedef enum {
     NR_GRABBED,
     NR_DROPPED,
     NR_DISTANCE,
-			
+    NR_DEBUG_JOE_TREAD,
 } NRType;
 
 typedef union {
     MSGPoint point;
     MSGMovement movement;
 	double distance;
+    TimerDebug tmr;
     bool answer;
+    bool left_mvmnt;
+    bool right_mvmnt;
+    MSGDebugJoeTread debug_joe_tread;
 } NRUnion;
 
 typedef struct {
@@ -54,7 +58,6 @@ typedef struct {
     NRUnion data;
 } NRMessage;
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
-
 void network_recv_init();
 void network_recv_task();
 void jsmn_prim(NRMessage msg, CharBuffer buff);

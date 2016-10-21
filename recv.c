@@ -344,6 +344,20 @@ void network_recv_task() {
                               processing_add_recvmsg(&message);
                            }
                         }
+                        else if(cmp_str_token("DebugJoeTread",1))
+                        {
+                            if(recv_tokens[2].type == JSMN_ARRAY){
+                                message.type = NR_DEBUG_JOE_TREAD;
+                                message.data.debug_joe_tread.left = buffer.buff[recv_tokens[3].start] == 't';
+                                message.data.debug_joe_tread.right = buffer.buff[recv_tokens[4].start] == 't';
+                                processing_add_recvmsg(&message);
+                            }
+                            else
+                            {
+                                message.type = NR_INVALID_ERROR;
+                                processing_add_recvmsg(&message);
+                            }
+                        }
                         else
                         {
                            message.type = NR_INVALID_ERROR;

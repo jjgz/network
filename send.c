@@ -53,7 +53,7 @@ void network_send_init() {
     choose_buff = 0;
     network_send_queue = xQueueCreate(NETWORK_SEND_QUEUE_LEN, sizeof(NSMessage));
     int_adc_init();
-    DRV_ADC_Open();
+    //DRV_ADC_Open();
 }
 
 void network_send_task() {
@@ -331,6 +331,45 @@ void network_send_task() {
                 buffer.buff = messagebuff;
                 buffer.length = sprintf(messagebuff, "{\"Dropped\":%s}",
                         message.data.answer ? "true" : "false");
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_DEBUG_JF:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"JF\":%d}",
+                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_DEBUG_JE:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"JE\":%d}",
+                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_DEBUG_OC:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%f,%f]}",
+                        message.data.tmr.l_spd, message.data.tmr.r_spd);
                 
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);

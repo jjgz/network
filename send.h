@@ -39,6 +39,9 @@ typedef enum {
     NS_GRABBED,
     NS_REQ_DROPPED,
     NS_DROPPED,
+    NS_DEBUG_OC,
+    NS_DEBUG_JF,
+    NS_DEBUG_JE,
 } NSType;
 
 typedef union {
@@ -46,7 +49,12 @@ typedef union {
     MSGMovement movement;
     MSGPoint point;
     bool answer;
+    double left_speed;
+    double right_speed;
     double distance;
+    TimerDebug tmr;
+    bool left_mvmnt;
+    bool right_mvmnt;
 } NSUnion;
 
 typedef struct {
