@@ -48,8 +48,8 @@ typedef union {
 	double distance;
     TimerDebug tmr;
     bool answer;
-    bool left_mvmnt;
-    bool right_mvmnt;
+    //bool left_mvmnt;
+    //bool right_mvmnt;
     MSGDebugJoeTread debug_joe_tread;
 } NRUnion;
 
@@ -57,6 +57,7 @@ typedef struct {
     NRType type;
     NRUnion data;
 } NRMessage;
+
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
 void network_recv_init();
 void network_recv_task();

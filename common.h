@@ -23,10 +23,9 @@ typedef struct {
 typedef struct{
     uint32_t tmr3;
     uint32_t tmr4;
-    double l_spd;
-    double r_spd;
-    int left_spd_avg;
-    int right_spd_avg;
+    uint32_t l_spd;
+    uint32_t r_spd;
+    uint32_t tmr_state;
 }TimerDebug;
 
 typedef struct{

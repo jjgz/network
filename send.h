@@ -42,6 +42,7 @@ typedef enum {
     NS_DEBUG_OC,
     NS_DEBUG_JF,
     NS_DEBUG_JE,
+            NS_TMR,
 } NSType;
 
 typedef union {
@@ -49,12 +50,12 @@ typedef union {
     MSGMovement movement;
     MSGPoint point;
     bool answer;
-    double left_speed;
-    double right_speed;
+    //double left_speed;
+    //double right_speed;
     double distance;
     TimerDebug tmr;
-    bool left_mvmnt;
-    bool right_mvmnt;
+    //bool left_mvmnt;
+    //bool right_mvmnt;
 } NSUnion;
 
 typedef struct {

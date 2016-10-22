@@ -368,7 +368,7 @@ void network_send_task() {
             case NS_DEBUG_OC:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%f,%f]}",
+                buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%u,%u]}",
                         message.data.tmr.l_spd, message.data.tmr.r_spd);
                 
                 if (buffer.length > 0) {
