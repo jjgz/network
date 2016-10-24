@@ -356,6 +356,21 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_ROVER_DATA:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"ADebugJosh\":[%u, %u, %u, %u]}", 
+                        message.data.rd.point.x, 
+                        message.data.rd.point.y,
+                        message.data.rd.ori,
+                        message.data.rd.target);
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
 //            case NS_TMR:
 //            {
 //                buffer.buff = messagebuff;

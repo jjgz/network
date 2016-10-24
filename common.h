@@ -28,4 +28,18 @@ typedef struct{
     double left_error;
     double right_error;
 }TimerDebug;
+
+typedef enum{
+    NORTH = 1,
+    SOUTH,
+    EAST,
+    WEST,
+}orientation;
+
+typedef struct{
+    orientation ori;
+    MSGPoint point;
+    uint8_t target;
+    
+}rover_debug;
 #endif

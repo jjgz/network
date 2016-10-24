@@ -41,6 +41,7 @@ typedef enum {
     NS_DROPPED,
             NS_TMR,
             NS_PWM,
+            NS_ROVER_DATA,
 } NSType;
 
 typedef union {
@@ -50,6 +51,7 @@ typedef union {
     bool answer;
     double distance;
     TimerDebug tmr;
+    rover_debug rd;
 } NSUnion;
 
 typedef struct {
