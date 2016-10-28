@@ -371,17 +371,41 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-//            case NS_TMR:
+            case NS_TEST_ROW:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u", message.data.w_array[0].weight);
+                int i, temp_byte;
+                int byte = buffer.length;
+                for (i = 1; i < 3; i++)
+                {
+                    temp_byte = sprintf(messagebuff+byte, ",%u", message.data.w_array[i].weight);
+                    byte += temp_byte;
+                }
+                temp_byte = sprintf(messagebuff+byte, "]}");
+                buffer.length = byte + temp_byte;
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                }
+                        
+            }break;
+            //TODO: Look for optimal way to construct the buffer instead of writing out all 64 values
+            //For now...just send over 4
+//            case NS_ROWS:
 //            {
 //                buffer.buff = messagebuff;
-//                buffer.length = sprintf(messagebuff, "{\"TDebugJosh\":[%u, %u]}", message.data.tmr.tmr3, message.data.tmr.tmr4);
+//                buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u, %u, %u, %u]}", 
+//                        message.data.rd.point.x, 
+//                        message.data.rd.point.y,
+//                        message.data.rd.ori,
+//                        message.data.rd.target);
 //                if (buffer.length > 0) {
 //                    wifly_int_send_buffer(&buffer);
 //                    next_messagebuff();
 //                } else {
 //                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
 //                }
-//                
 //            }break;
             default:
                 break;

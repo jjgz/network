@@ -42,11 +42,13 @@ typedef enum {
             NS_TMR,
             NS_PWM,
             NS_ROVER_DATA,
+            NS_TEST_ROW,
 } NSType;
 
 typedef union {
     MSGNetstats netstats;
     MSGMovement movement;
+    weight_array w_array[64];
     MSGPoint point;
     bool answer;
     double distance;

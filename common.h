@@ -21,6 +21,10 @@ typedef struct {
 } MSGPoint;
 
 typedef struct{
+    uint8_t weight;
+}weight_array;
+
+typedef struct{
     uint32_t tmr3;
     uint32_t tmr4;
     uint32_t speed_left;
@@ -39,7 +43,7 @@ typedef enum{
 typedef struct{
     orientation ori;
     MSGPoint point;
-    uint8_t target;
+    uint32_t target;
     
 }rover_debug;
 #endif
