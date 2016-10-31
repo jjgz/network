@@ -40,6 +40,7 @@ typedef enum {
     NS_REQ_DROPPED,
     NS_DROPPED,
             NS_TMR,
+            NS_DEBUG_GEORDON_ADC,
 } NSType;
 
 typedef union {
@@ -49,6 +50,7 @@ typedef union {
     bool answer;
     double distance;
     TimerDebug tmr;
+    unsigned adc_reading;
 } NSUnion;
 
 typedef struct {
