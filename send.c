@@ -320,6 +320,31 @@ void network_send_task() {
                 buffer.buff = messagebuff;
                 buffer.length = sprintf(messagebuff, "{\"DebugGeordon\":\"ADC Reading: %u\"}", message.data.adc_reading);
             }break;
+            case NS_GD_HALF_ROW:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"GDHalfRow\":[");
+                unsigned i;
+                for (i = 0; i < 63; i++) {
+                    // Assume its always < 100 for performance.
+                    messagebuff[buffer.length] = (message.data.w_array[i] / 10) + '0';
+                    messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
+                    messagebuff[buffer.length + 2] = ',';
+                    buffer.length += 3;
+                }
+                messagebuff[buffer.length] = (message.data.w_array[63] / 10) + '0';
+                messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
+                messagebuff[buffer.length + 2] = ']';
+                messagebuff[buffer.length + 3] = '}';
+                buffer.length += 4;
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
             case NS_ROVER_DATA:
             {
                 buffer.buff = messagebuff;
@@ -338,12 +363,12 @@ void network_send_task() {
             case NS_TEST_ROW:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u", message.data.w_array[0].weight);
+                buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u", message.data.w_array[0]);
                 int i, temp_byte;
                 int byte = buffer.length;
                 for (i = 1; i < 3; i++)
                 {
-                    temp_byte = sprintf(messagebuff+byte, ",%u", message.data.w_array[i].weight);
+                    temp_byte = sprintf(messagebuff+byte, ",%u", message.data.w_array[i]);
                     byte += temp_byte;
                 }
                 temp_byte = sprintf(messagebuff+byte, "]}");

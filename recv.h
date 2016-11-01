@@ -32,22 +32,24 @@ typedef enum {
     NR_GRABBED,
     NR_DROPPED,
     NR_DISTANCE,
-            NR_TEST_RESET,
-            NR_TEST_ROTATE,
-            NR_TEST_MOVE,
-            NR_TEST_ROW,
+    NR_TEST_RESET,
+    NR_TEST_ROTATE,
+    NR_TEST_MOVE,
+    NR_TEST_ROW,
+    NR_GD_REQ_HALF_ROW,
 			
 } NRType;
 
 typedef union {
     MSGPoint point;
     MSGMovement movement;
-    weight_array w_array[64];
+    uint8_t w_array[64];
 	double distance;
     uint8_t rotate_val;
     uint8_t move_val;
     bool answer;
     TimerDebug tmr;
+    uint8_t half_row;
 } NRUnion;
 
 typedef struct {

@@ -168,7 +168,7 @@ void network_recv_task() {
                                        processing_add_recvmsg(&message);
                                     }
                                     else
-                                       message.data.w_array[i].weight = (uint8_t)atoi(buffer.buff + recv_tokens[3+i].start);
+                                       message.data.w_array[i] = (uint8_t)atoi(buffer.buff + recv_tokens[3+i].start);
 //                                    if(recv_tokens[i].type != JSMN_PRIMITIVE)
 //                                    {
 //                                       message.type = NR_INVALID_ERROR;
@@ -331,6 +331,19 @@ void network_recv_task() {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_TEST_MOVE;
                                message.data.move_val = atoi(buffer.buff + recv_tokens[2].start);
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("GDReqHalfRow", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_GD_REQ_HALF_ROW;
+                               message.data.half_row = atoi(buffer.buff + recv_tokens[2].start);
                               processing_add_recvmsg(&message);
                            }
                            else
