@@ -33,7 +33,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define NETWORK_SEND_QUEUE_LEN 16
 #define MESSAGE_BUF_SIZE 512
 #define TOTAL_MESSAGE_BUFFS 4
-rover my_rover;
 QueueHandle_t network_send_queue;
 
 char messagebuffs[TOTAL_MESSAGE_BUFFS][MESSAGE_BUF_SIZE];
@@ -82,7 +81,6 @@ void network_send_task() {
             } break;
             case NS_SEND_NAME_JOSH:
             {
-                my_rover.bools.got_name = true;
                 buffer.buff = "\"NameJosh\"";
                 buffer.length = strlen(buffer.buff);
                 wifly_int_send_buffer(&buffer);
