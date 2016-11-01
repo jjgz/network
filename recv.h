@@ -39,13 +39,20 @@ typedef enum {
     NR_GRABBED,
     NR_DROPPED,
     NR_DISTANCE,
+            NR_TEST_RESET,
+            NR_TEST_ROTATE,
+            NR_TEST_MOVE,
+            NR_TEST_ROW,
 			
 } NRType;
 
 typedef union {
     MSGPoint point;
     MSGMovement movement;
+    weight_array w_array[64];
 	double distance;
+    uint8_t rotate_val;
+    uint8_t move_val;
     bool answer;
     TimerDebug tmr;
 } NRUnion;

@@ -39,18 +39,23 @@ typedef enum {
     NS_GRABBED,
     NS_REQ_DROPPED,
     NS_DROPPED,
-            NS_TMR,
-            NS_DEBUG_GEORDON_ADC,
+    NS_TMR,
+    NS_DEBUG_GEORDON_ADC,
+    NS_PWM,
+    NS_ROVER_DATA,
+    NS_TEST_ROW,
 } NSType;
 
 typedef union {
     MSGNetstats netstats;
     MSGMovement movement;
+    weight_array w_array[64];
     MSGPoint point;
     bool answer;
     double distance;
     TimerDebug tmr;
     unsigned adc_reading;
+    rover_debug rd;
 } NSUnion;
 
 typedef struct {
