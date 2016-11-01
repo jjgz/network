@@ -114,12 +114,6 @@ void network_recv_task() {
                      } else if(cmp_str_token(recv_req_movement, 0)) {
                          message.type = NR_REQ_MOVEMENT;
                          processing_add_recvmsg(&message);
-                     } else if(cmp_str_token(recv_req_joe_points, 0)) {
-                         message.type = NR_REQ_JOE_POINTS;
-                         processing_add_recvmsg(&message);
-                     } else if(cmp_str_token(recv_req_josh_points, 0)) {
-                         message.type = NR_REQ_JOSH_POINTS;
-                         processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_stopped, 0)) {
                          message.type = NR_REQ_STOPPED;
                          processing_add_recvmsg(&message);
@@ -221,71 +215,6 @@ void network_recv_task() {
                                     processing_add_recvmsg(&message);
                                }
                            }
-                           else
-                           {
-                              message.type = NR_INVALID_ERROR;
-                              processing_add_recvmsg(&message);
-                           }
-                        }
-                        else if(cmp_str_token("JF", 1))
-                        {
-                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
-                               message.type = NR_JF; 
-                               jsmn_prim(message, buffer);   
-                           }
-                           
-                           else
-                           {
-                              message.type = NR_INVALID_ERROR;
-                              processing_add_recvmsg(&message);
-                           }
-                        }
-                        else if(cmp_str_token("JE", 1))
-                        {
-                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
-                               message.type = NR_JE; 
-                               jsmn_prim(message, buffer);   
-                           }
-                           
-                           else
-                           {
-                              message.type = NR_INVALID_ERROR;
-                              processing_add_recvmsg(&message);
-                           }
-                        }
-                        else if(cmp_str_token("CF", 1))
-                        {
-                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
-                               message.type = NR_CF; 
-                               jsmn_prim(message, buffer);   
-                           }
-                           
-                           else
-                           {
-                              message.type = NR_INVALID_ERROR;
-                              processing_add_recvmsg(&message);
-                           }
-                        }
-                        else if(cmp_str_token("CE", 1))
-                        {
-                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
-                               message.type = NR_CE; 
-                               jsmn_prim(message, buffer);   
-                           }
-                           
-                           else
-                           {
-                              message.type = NR_INVALID_ERROR;
-                              processing_add_recvmsg(&message);
-                           }
-                        }
-                        else if(cmp_str_token("CT", 1))
-                        {
-                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
-                               message.type = NR_CT; 
-                               jsmn_prim(message, buffer);   
-                           }
-                           
                            else
                            {
                               message.type = NR_INVALID_ERROR;
