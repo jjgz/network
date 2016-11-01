@@ -18,6 +18,10 @@ typedef enum {
     NS_SEND_NAME_JOE,
     NS_REQ_MOVEMENT,
     NS_MOVEMENT,
+    NS_REQ_TARGETS,
+    NS_TARGETS,
+    NS_REQ_HALF_ROW,
+    NS_HALF_ROW,
     NS_REQ_STOPPED,
     NS_STOPPED,
     NS_REQ_IN_POS,
@@ -34,6 +38,7 @@ typedef enum {
     NS_DROPPED,
     NS_TMR,
     NS_DEBUG_GEORDON_ADC,
+    NS_GD_HALF_ROW,
     NS_PWM,
     NS_ROVER_DATA,
     NS_TEST_ROW,
@@ -42,13 +47,14 @@ typedef enum {
 typedef union {
     MSGNetstats netstats;
     MSGMovement movement;
-    weight_array w_array[64];
+    uint8_t w_array[64];
     MSGPoint point;
     bool answer;
     double distance;
     TimerDebug tmr;
     unsigned adc_reading;
     rover_debug rd;
+    unsigned row_req;
 } NSUnion;
 
 typedef struct {
