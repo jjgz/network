@@ -42,6 +42,7 @@ typedef enum {
     NS_PWM,
     NS_ROVER_DATA,
     NS_TEST_ROW,
+    NS_GD_PING,
 } NSType;
 
 typedef union {

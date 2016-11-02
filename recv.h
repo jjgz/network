@@ -37,7 +37,7 @@ typedef enum {
     NR_TEST_MOVE,
     NR_TEST_ROW,
     NR_GD_REQ_HALF_ROW,
-			
+    NR_GD_REQ_PING,
 } NRType;
 
 typedef union {

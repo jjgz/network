@@ -378,6 +378,12 @@ void network_send_task() {
                     next_messagebuff();
                 }
             }break;
+            case NS_GD_PING:
+            {
+                buffer.buff = "\"GDPing\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
             // TODO: Look for optimal way to construct the buffer instead of writing out all 64 values
             // For now...just send over 4
 //            case NS_ROWS:

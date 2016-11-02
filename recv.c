@@ -135,8 +135,10 @@ void network_recv_task() {
                      } else if(cmp_str_token(recv_req_Dropped, 0)) {
                          message.type = NR_REQ_DROPPED;
                          processing_add_recvmsg(&message);
-                     }
-                     else {
+                     }  else if(cmp_str_token("GDReqPing", 0)) {
+                         message.type = NR_GD_REQ_PING;
+                         processing_add_recvmsg(&message);
+                     } else {
                          message.type = NR_INVALID_ERROR;
                          processing_add_recvmsg(&message);
                      }
