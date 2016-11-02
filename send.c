@@ -368,8 +368,8 @@ void network_send_task() {
             case NS_DEBUG_OC:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%u,%u]}",
-                        message.data.tmr.l_spd, message.data.tmr.r_spd);
+                buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%u,%u,%u,%u]}",
+                        message.data.tmr.l_spd, message.data.tmr.r_spd, message.data.tmr.tmr3, message.data.tmr.tmr4);
                 
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
@@ -377,6 +377,19 @@ void network_send_task() {
                 } else {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
+            }break;
+            case NS_DEBUG_JOE_DISTANCE:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%u]}",
+                        message.data.distance);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }                
             }break;
         }
     }

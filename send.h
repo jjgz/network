@@ -42,6 +42,7 @@ typedef enum {
     NS_DEBUG_OC,
     NS_DEBUG_JF,
     NS_DEBUG_JE,
+            NS_DEBUG_JOE_DISTANCE,
             NS_TMR,
 } NSType;
 
@@ -52,7 +53,9 @@ typedef union {
     bool answer;
     //double left_speed;
     //double right_speed;
-    double distance;
+    int distance;
+    int dist_x;
+    int dist_y;
     TimerDebug tmr;
     //bool left_mvmnt;
     //bool right_mvmnt;
