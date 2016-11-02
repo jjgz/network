@@ -37,8 +37,6 @@ typedef enum {
     NS_REQ_DROPPED,
     NS_DROPPED,
     NS_DEBUG_OC,
-    NS_DEBUG_JF,
-    NS_DEBUG_JE,
     NS_DEBUG_JOE_DISTANCE,
     NS_TMR,
     NS_DEBUG_GEORDON_ADC,
@@ -47,6 +45,8 @@ typedef enum {
     NS_ROVER_DATA,
     NS_TEST_ROW,
     NS_GD_PING,
+    NS_JG_REQ_ULTRA,
+    NS_JG_REQ_PHOTO,
 } NSType;
 
 typedef union {
@@ -57,13 +57,13 @@ typedef union {
     bool answer;
     //double left_speed;
     //double right_speed;
-    int distance;
-    int dist_x;
-    int dist_y;
-    TimerDebug tmr;
+    //int distance;
+    double dist_x;
+    double dist_y;
+    TimerJGDebug tm3r;
     //bool left_mvmnt;
     //bool right_mvmnt;
-    double distance;
+    //double distance;
     TimerDebug tmr;
     unsigned adc_reading;
     rover_debug rd;

@@ -300,12 +300,6 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            case NS_DEBUG_JF:
-            {
-                buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"JF\":%d}",
-                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);   
-            }
             case NS_PWM:
             {
                 buffer.buff = messagebuff;
@@ -323,12 +317,6 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            case NS_DEBUG_JE:
-            {
-                buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"JE\":%d}",
-                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
-            }
             case NS_DEBUG_GEORDON_ADC:
             {
                 buffer.buff = messagebuff;
@@ -361,7 +349,7 @@ void network_send_task() {
             case NS_DEBUG_OC:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%u,%u,%u,%u]}",
+                buffer.length = sprintf(messagebuff, "{\"DebugJoeOC\": [%u,%u,%u,%u]}",
                         message.data.tmr.l_spd, message.data.tmr.r_spd, message.data.tmr.tmr3, message.data.tmr.tmr4);
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
@@ -385,10 +373,14 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            //TODO:
+            //change this message to output both x and y distance
+            //maybe make official messages to output x and y and rotation and then
+            //route to client instead
             case NS_DEBUG_JOE_DISTANCE:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%u]}",
+                buffer.length = sprintf(messagebuff, "{\"DebugJoeDistance\": [%u]}",
                         message.data.distance);
                 
                 if (buffer.length > 0) {
