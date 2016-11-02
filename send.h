@@ -18,13 +18,10 @@ typedef enum {
     NS_SEND_NAME_JOE,
     NS_REQ_MOVEMENT,
     NS_MOVEMENT,
-    NS_JOE_REQ_POINTS,
-    NS_JF,
-    NS_JE,
-    NS_JOSH_REQ_POINTS,
-    NS_CF,
-    NS_CE,
-    NS_CT,
+    NS_REQ_TARGETS,
+    NS_TARGETS,
+    NS_REQ_HALF_ROW,
+    NS_HALF_ROW,
     NS_REQ_STOPPED,
     NS_STOPPED,
     NS_REQ_IN_POS,
@@ -42,13 +39,20 @@ typedef enum {
     NS_DEBUG_OC,
     NS_DEBUG_JF,
     NS_DEBUG_JE,
-            NS_DEBUG_JOE_DISTANCE,
-            NS_TMR,
+    NS_DEBUG_JOE_DISTANCE,
+    NS_TMR,
+    NS_DEBUG_GEORDON_ADC,
+    NS_GD_HALF_ROW,
+    NS_PWM,
+    NS_ROVER_DATA,
+    NS_TEST_ROW,
+    NS_GD_PING,
 } NSType;
 
 typedef union {
     MSGNetstats netstats;
     MSGMovement movement;
+    uint8_t w_array[64];
     MSGPoint point;
     bool answer;
     //double left_speed;
@@ -59,6 +63,11 @@ typedef union {
     TimerDebug tmr;
     //bool left_mvmnt;
     //bool right_mvmnt;
+    double distance;
+    TimerDebug tmr;
+    unsigned adc_reading;
+    rover_debug rd;
+    unsigned row_req;
 } NSUnion;
 
 typedef struct {

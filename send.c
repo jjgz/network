@@ -33,7 +33,6 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #define NETWORK_SEND_QUEUE_LEN 16
 #define MESSAGE_BUF_SIZE 512
 #define TOTAL_MESSAGE_BUFFS 4
-
 QueueHandle_t network_send_queue;
 
 char messagebuffs[TOTAL_MESSAGE_BUFFS][MESSAGE_BUF_SIZE];
@@ -54,6 +53,7 @@ void network_send_init() {
     network_send_queue = xQueueCreate(NETWORK_SEND_QUEUE_LEN, sizeof(NSMessage));
     int_adc_init();
     //DRV_ADC_Open();
+
 }
 
 void network_send_task() {
@@ -129,17 +129,11 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            case NS_JOE_REQ_POINTS:
-            {
-                buffer.buff = "\"JoeReqPoints\"";
-                buffer.length = strlen(buffer.buff);
-                wifly_int_send_buffer(&buffer);
-            }break;
-            case NS_JF:
+            case NS_REQ_HALF_ROW:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"JF\":%d}",
-                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                buffer.length = sprintf(messagebuff, "{\"ReqHalfRow\":%u}",
+                        message.data.row_req);
                 
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
@@ -148,56 +142,23 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            case NS_JE:
+            case NS_HALF_ROW:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"JE\":%d}",
-                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
-                
-                if (buffer.length > 0) {
-                    wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
-                } else {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                buffer.length = sprintf(messagebuff, "{\"HalfRow\":[");
+                unsigned i;
+                for (i = 0; i < 63; i++) {
+                    // Assume its always < 100 for performance.
+                    messagebuff[buffer.length] = (message.data.w_array[i] / 10) + '0';
+                    messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
+                    messagebuff[buffer.length + 2] = ',';
+                    buffer.length += 3;
                 }
-            }break;
-            case NS_JOSH_REQ_POINTS:
-            {
-                buffer.buff = "\"JoeReqPoints\"";
-                buffer.length = strlen(buffer.buff);
-                wifly_int_send_buffer(&buffer);
-            }break;
-            case NS_CF:
-            {
-                buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"CF\":%d}",
-                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
-                
-                if (buffer.length > 0) {
-                    wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
-                } else {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
-            }break;
-            case NS_CE:
-            {
-                buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"CE\":%d}",
-                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
-                
-                if (buffer.length > 0) {
-                    wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
-                } else {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
-            }break;
-            case NS_CT:
-            {
-                buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"CT\":%d}",
-                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
+                messagebuff[buffer.length] = (message.data.w_array[63] / 10) + '0';
+                messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
+                messagebuff[buffer.length + 2] = ']';
+                messagebuff[buffer.length + 3] = '}';
+                buffer.length += 4;
                 
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
@@ -343,8 +304,18 @@ void network_send_task() {
             {
                 buffer.buff = messagebuff;
                 buffer.length = sprintf(messagebuff, "{\"JF\":%d}",
-                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
-                
+                        (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);   
+            }
+            case NS_PWM:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"PDebugJosh\":[%u, %u, %u, %u, %u, %u]}", 
+                        message.data.tmr.speed_left, 
+                        message.data.tmr.speed_right,
+                        message.data.tmr.tmr4,
+                        message.data.tmr.tmr3,
+                        message.data.tmr.speed_left,
+                        message.data.tmr.speed_right);
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();
@@ -357,7 +328,29 @@ void network_send_task() {
                 buffer.buff = messagebuff;
                 buffer.length = sprintf(messagebuff, "{\"JE\":%d}",
                         (uint32_t)message.data.point.x + 128 * (uint32_t)message.data.point.y);
-                
+            }
+            case NS_DEBUG_GEORDON_ADC:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"DebugGeordon\":\"ADC Reading: %u\"}", message.data.adc_reading);
+            }break;
+            case NS_GD_HALF_ROW:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"GDHalfRow\":[");
+                unsigned i;
+                for (i = 0; i < 63; i++) {
+                    // Assume its always < 100 for performance.
+                    messagebuff[buffer.length] = (message.data.w_array[i] / 10) + '0';
+                    messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
+                    messagebuff[buffer.length + 2] = ',';
+                    buffer.length += 3;
+                }
+                messagebuff[buffer.length] = (message.data.w_array[63] / 10) + '0';
+                messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
+                messagebuff[buffer.length + 2] = ']';
+                messagebuff[buffer.length + 3] = '}';
+                buffer.length += 4;                
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();
@@ -370,7 +363,21 @@ void network_send_task() {
                 buffer.buff = messagebuff;
                 buffer.length = sprintf(messagebuff, "{\"DebugOC\": [%u,%u,%u,%u]}",
                         message.data.tmr.l_spd, message.data.tmr.r_spd, message.data.tmr.tmr3, message.data.tmr.tmr4);
-                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;               
+            case NS_ROVER_DATA:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"ADebugJosh\":[%u, %u, %u, %u]}", 
+                        message.data.rd.point.x, 
+                        message.data.rd.point.y,
+                        message.data.rd.ori,
+                        message.data.rd.target);
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();
@@ -391,7 +398,50 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }                
             }break;
+            case NS_TEST_ROW:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u", message.data.w_array[0]);
+                int i, temp_byte;
+                int byte = buffer.length;
+                for (i = 1; i < 3; i++)
+                {
+                    temp_byte = sprintf(messagebuff+byte, ",%u", message.data.w_array[i]);
+                    byte += temp_byte;
+                }
+                temp_byte = sprintf(messagebuff+byte, "]}");
+                buffer.length = byte + temp_byte;
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                }
+            }break;
+            case NS_GD_PING:
+            {
+                buffer.buff = "\"GDPing\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            // TODO: Look for optimal way to construct the buffer instead of writing out all 64 values
+            // For now...just send over 4
+//            case NS_ROWS:
+//            {
+//                buffer.buff = messagebuff;
+//                buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u, %u, %u, %u]}", 
+//                        message.data.rd.point.x, 
+//                        message.data.rd.point.y,
+//                        message.data.rd.ori,
+//                        message.data.rd.target);
+//                if (buffer.length > 0) {
+//                    wifly_int_send_buffer(&buffer);
+//                    next_messagebuff();
+//                } else {
+//                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+//                }
+//            }break;
+            default:
+                break;
         }
     }
-    
 }
+
