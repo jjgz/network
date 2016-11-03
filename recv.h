@@ -38,6 +38,7 @@ typedef enum {
     NR_TEST_ROW,
     NR_GD_REQ_HALF_ROW,
     NR_GD_REQ_PING,
+            NR_REQ_JOSH_POINTS,
 } NRType;
 
 typedef union {
