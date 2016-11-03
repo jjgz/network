@@ -354,6 +354,28 @@ void network_recv_task() {
                               processing_add_recvmsg(&message);
                            }
                         }
+                        else if(cmp_str_token("HalfRow", 1))
+                        {
+                            if(recv_tokens[2].type == JSMN_ARRAY)
+                            {
+                                int i;
+                                for(i = 0; i < 64; i++)
+                                {
+                                    if(recv_tokens[3+i].type != JSMN_PRIMITIVE)
+                                    {
+                                       message.type = NR_INVALID_ERROR;
+                                       processing_add_recvmsg(&message);
+                                    }
+                                    else
+                                       message.data.w_array[i] = (uint8_t)atoi(buffer.buff + recv_tokens[3+i].start);
+                                }
+                                message.type = NR_HALF_ROW;
+                                processing_add_recvmsg(&message);
+                            } else {
+                                message.type = NR_INVALID_ERROR;
+                                 processing_add_recvmsg(&message);
+                            }
+                        }
                         else
                         {
                            message.type = NR_INVALID_ERROR;
