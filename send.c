@@ -147,16 +147,30 @@ void network_send_task() {
                 unsigned i;
                 for (i = 0; i < 63; i++) {
                     // Assume its always < 100 for performance.
-                    messagebuff[buffer.length] = (message.data.w_array[i] / 10) + '0';
-                    messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
-                    messagebuff[buffer.length + 2] = ',';
-                    buffer.length += 3;
+                    unsigned h = message.data.w_array[i] / 10;
+                    if (h > 0) {
+                        messagebuff[buffer.length] = h + '0';
+                        messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
+                        messagebuff[buffer.length + 2] = ',';
+                        buffer.length += 3;
+                    } else {
+                        messagebuff[buffer.length] = (message.data.w_array[i] % 10) + '0';
+                        messagebuff[buffer.length + 1] = ',';
+                        buffer.length += 2;
+                    }
                 }
-                messagebuff[buffer.length] = (message.data.w_array[63] / 10) + '0';
-                messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
-                messagebuff[buffer.length + 2] = ']';
-                messagebuff[buffer.length + 3] = '}';
-                buffer.length += 4;
+                unsigned h = message.data.w_array[63] / 10;
+                if (h > 0) {
+                    messagebuff[buffer.length] = h + '0';
+                    messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
+                    buffer.length += 2;
+                } else {
+                    messagebuff[buffer.length] = (message.data.w_array[63] % 10) + '0';
+                    buffer.length += 1;
+                }
+                messagebuff[buffer.length] = ']';
+                messagebuff[buffer.length + 1] = '}';
+                buffer.length += 2;
                 
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
@@ -340,16 +354,30 @@ void network_send_task() {
                 unsigned i;
                 for (i = 0; i < 63; i++) {
                     // Assume its always < 100 for performance.
-                    messagebuff[buffer.length] = (message.data.w_array[i] / 10) + '0';
-                    messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
-                    messagebuff[buffer.length + 2] = ',';
-                    buffer.length += 3;
+                    unsigned h = message.data.w_array[i] / 10;
+                    if (h > 0) {
+                        messagebuff[buffer.length] = h + '0';
+                        messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
+                        messagebuff[buffer.length + 2] = ',';
+                        buffer.length += 3;
+                    } else {
+                        messagebuff[buffer.length] = (message.data.w_array[i] % 10) + '0';
+                        messagebuff[buffer.length + 1] = ',';
+                        buffer.length += 2;
+                    }
                 }
-                messagebuff[buffer.length] = (message.data.w_array[63] / 10) + '0';
-                messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
-                messagebuff[buffer.length + 2] = ']';
-                messagebuff[buffer.length + 3] = '}';
-                buffer.length += 4;
+                unsigned h = message.data.w_array[63] / 10;
+                if (h > 0) {
+                    messagebuff[buffer.length] = h + '0';
+                    messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
+                    buffer.length += 2;
+                } else {
+                    messagebuff[buffer.length] = (message.data.w_array[63] % 10) + '0';
+                    buffer.length += 1;
+                }
+                messagebuff[buffer.length] = ']';
+                messagebuff[buffer.length + 1] = '}';
+                buffer.length += 2;
                 
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
