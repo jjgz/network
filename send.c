@@ -307,6 +307,12 @@ void network_send_task() {
                 buffer.length = strlen(buffer.buff);
                 wifly_int_send_buffer(&buffer);
             }break;
+            case NS_TEST_REQ_GRABBED:
+            {
+                buffer.buff = "\"GReqGrabbed\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
             case NS_GRABBED:
             {
                 buffer.buff = messagebuff;
@@ -320,6 +326,13 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_TEST_REQ_DROPPED:
+            {
+                buffer.buff = "\"DReqDropped\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            
             case NS_REQ_DROPPED:
             {
                 buffer.buff = "\"ReqDropped\"";
@@ -377,7 +390,7 @@ void network_send_task() {
                 buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u", message.data.w_array[0].weight);
                 int i, temp_byte;
                 int byte = buffer.length;
-                for (i = 1; i < 3; i++)
+                for (i = 1; i < 2; i++)
                 {
                     temp_byte = sprintf(messagebuff+byte, ",%u", message.data.w_array[i].weight);
                     byte += temp_byte;

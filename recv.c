@@ -166,7 +166,7 @@ void network_recv_task() {
                                 //  else - row_vals[i] = atoi(buffer.buff + recv_tokens[3+i])
                                 //
                                 int i;
-                                for(i = 0; i < 3; i++)
+                                for(i = 0; i < 32; i++)
                                 {
                                     if(recv_tokens[3+i].type != JSMN_PRIMITIVE)
                                     {
