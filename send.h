@@ -36,13 +36,16 @@ typedef enum {
     NS_GRABBED,
     NS_REQ_DROPPED,
     NS_DROPPED,
-    NS_TMR,
     NS_DEBUG_GEORDON_ADC,
     NS_GD_HALF_ROW,
-    NS_PWM,
-    NS_ROVER_DATA,
-    NS_TEST_ROW,
     NS_GD_PING,
+            NS_TMR,
+            NS_PWM,
+            NS_ROVER_DATA,
+            NS_TEST_ROW,
+            NS_TEST_REQ_GRABBED,
+            NS_TEST_REQ_DROPPED,
+            NS_JOSH_REQ_POINTS,
 } NSType;
 
 typedef union {
