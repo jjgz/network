@@ -28,13 +28,14 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "debug.h"
 #include "network/jsmn/jsmn.h"
 #include <string.h>
+#include <stdlib.h>
 #define NETWORK_RECV_QUEUE_LEN 14
 #define cmp_str_token(sname, token) sizeof(sname)-1 == base_str_len && !strncmp(sname, buffer.buff + recv_tokens[token].start, sizeof(sname)-1)
 
 QueueHandle_t network_recv_queue;
 
 jsmn_parser recv_parser;
-jsmntok_t recv_tokens[64];
+jsmntok_t recv_tokens[96];
 uint8_t row_vals[64];
 Point recv_point_ring_buffers[PROCESSING_QUEUE_LEN+2][20];
 unsigned recv_ring_buffer_pos;
@@ -214,6 +215,44 @@ void network_recv_task() {
                                     message.data.movement.v = atof(buffer.buff + recv_tokens[8].start);
                                     message.data.movement.angle = atof(buffer.buff + recv_tokens[10].start);
                                     message.data.movement.av = atof(buffer.buff + recv_tokens[12].start);
+                                    processing_add_recvmsg(&message);
+                               }
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Initialize", 1))
+                        {
+                         //debug_loc(DEBUG_RECV_GRABBING)
+                           if(recv_tokens[2].type == JSMN_OBJECT)
+                           {
+                               int i;
+                               for(i = 0; i < 2; i++)
+                               {
+                                   if(recv_tokens[3+i*2].type != JSMN_STRING)
+                                   {
+                                       message.type = NR_INVALID_ERROR;
+                                       processing_add_recvmsg(&message);
+                                       continue;
+                                   }
+                               }
+                               if(!cmp_str_token("nt", 3) || !cmp_str_token("bd", 5))
+                               {
+                                    message.type = NR_INVALID_ERROR;
+                                    processing_add_recvmsg(&message);
+                               }
+                               else
+                               {
+                                   
+                                    message.type = NR_INITIALIZE;
+                                    message.data.initialization.nt = atoi(buffer.buff + recv_tokens[4].start);
+                                    for (i = 0; i < recv_tokens[5].size; i++) {
+                                        message.data.initialization.points[i].x = atof(buffer.buff + recv_tokens[8+i*5].start);
+                                        message.data.initialization.points[i].y = atof(buffer.buff + recv_tokens[10+i*5].start);
+                                    }
                                     processing_add_recvmsg(&message);
                                }
                            }

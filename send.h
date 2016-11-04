@@ -37,6 +37,7 @@ typedef enum {
     NS_REQ_DROPPED,
     NS_DROPPED,
     NS_DEBUG_GEORDON_ADC,
+    NS_DEBUG_GEORDON_STR,
     NS_GD_HALF_ROW,
     NS_GD_PING,
             NS_TMR,
@@ -59,6 +60,7 @@ typedef union {
     unsigned adc_reading;
     rover_debug rd;
     unsigned row_req;
+    const char *dbstr;
 } NSUnion;
 
 typedef struct {

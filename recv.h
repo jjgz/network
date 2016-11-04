@@ -15,6 +15,7 @@
 typedef enum {
     NR_INVALID_ERROR,
     NR_QUERY_STATS,
+    NR_INITIALIZE,
     NR_REQ_NAME,
     NR_REQ_MOVEMENT,
     NR_REQ_STOPPED,
@@ -44,6 +45,7 @@ typedef enum {
 
 typedef union {
     MSGPoint point;
+    MSGInitialize initialization;
     MSGMovement movement;
     uint8_t w_array[64];
 	double distance;

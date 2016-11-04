@@ -2,6 +2,10 @@
 #define _NETWORK_COMMON_H
 
 typedef struct {
+    float x, y;
+} BasicPoint;
+
+typedef struct {
     unsigned numGoodMessagesRecved;
     unsigned numCommErrors;
     unsigned numJSONRequestsRecved;
@@ -9,6 +13,13 @@ typedef struct {
     unsigned numJSONRequestsSent;
     unsigned numJSONResponsesSent;
 } MSGNetstats;
+
+typedef struct {
+    /// Number of targets.
+    unsigned nt;
+    /// Arena borders.
+    BasicPoint points[14];
+} MSGInitialize;
 
 typedef struct {
     float x, y, v, angle, av;
