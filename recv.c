@@ -36,7 +36,6 @@ QueueHandle_t network_recv_queue;
 
 jsmn_parser recv_parser;
 jsmntok_t recv_tokens[96];
-uint8_t row_vals[64];
 Point recv_point_ring_buffers[PROCESSING_QUEUE_LEN+2][20];
 unsigned recv_ring_buffer_pos;
 
@@ -78,6 +77,7 @@ void network_recv_task() {
              message.type = NR_INVALID_ERROR;
              processing_add_recvmsg(&message);
              SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+             SYS_PORTS_PinWrite(0, PORT_CHANNEL_C, PORTS_BIT_POS_1, 1);
              continue;
         }
         else
@@ -392,6 +392,51 @@ void network_recv_task() {
                               message.type = NR_INVALID_ERROR;
                               processing_add_recvmsg(&message);
                            }
+                        }
+                        else if(cmp_str_token("ReqHalfRow", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+                               message.type = NR_REQ_HALF_ROW;
+                               message.data.half_row = atoi(buffer.buff + recv_tokens[2].start);
+                              processing_add_recvmsg(&message);
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("JCHalfRow", 1))
+                        {
+//                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
+//                               message.type = NR_JC_HALF_ROW;
+//                               message.data.half_row = atoi(buffer.buff + recv_tokens[2].start);
+//                              processing_add_recvmsg(&message);
+//                           }
+//                           else
+//                           {
+//                              message.type = NR_INVALID_ERROR;
+//                              processing_add_recvmsg(&message);
+//                           }
+                           if(recv_tokens[2].type == JSMN_ARRAY)
+                            {
+                                int i;
+                                for(i = 0; i < 64; i++)
+                                {
+                                    if(recv_tokens[3+i].type != JSMN_PRIMITIVE)
+                                    {
+                                       message.type = NR_INVALID_ERROR;
+                                       processing_add_recvmsg(&message);
+                                    }
+                                    else
+                                       message.data.w_array[i] = (uint8_t)atoi(buffer.buff + recv_tokens[3+i].start);
+                                }
+                                message.type = NR_JC_HALF_ROW;
+                                processing_add_recvmsg(&message);
+                            } else {
+                                message.type = NR_INVALID_ERROR;
+                                 processing_add_recvmsg(&message);
+                            }
                         }
                         else if(cmp_str_token("HalfRow", 1))
                         {

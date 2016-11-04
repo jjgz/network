@@ -139,6 +139,20 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_JC_REQ_HALF_ROW:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"HDebugJosh\":%u}",
+                        message.data.row_req);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_C, PORTS_BIT_POS_1, 1);
+                }
+            }break;
             case NS_HALF_ROW:
             {
                 buffer.buff = messagebuff;
@@ -332,8 +346,8 @@ void network_send_task() {
                         message.data.tmr.speed_right,
                         message.data.tmr.tmr4,
                         message.data.tmr.tmr3,
-                        message.data.tmr.speed_left,
-                        message.data.tmr.speed_right);
+                        message.data.tmr.left_error,
+                        message.data.tmr.right_error);
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();

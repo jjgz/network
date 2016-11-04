@@ -47,6 +47,7 @@ typedef enum {
             NS_TEST_REQ_GRABBED,
             NS_TEST_REQ_DROPPED,
             NS_JOSH_REQ_POINTS,
+            NS_JC_REQ_HALF_ROW,
 } NSType;
 
 typedef union {
@@ -59,8 +60,8 @@ typedef union {
     TimerDebug tmr;
     unsigned adc_reading;
     rover_debug rd;
-    unsigned row_req;
     const char *dbstr;
+    uint8_t row_req;
 } NSUnion;
 
 typedef struct {
