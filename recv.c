@@ -251,6 +251,7 @@ void network_recv_task() {
                                     message.data.initialization.nt = atoi(buffer.buff + recv_tokens[4].start);
                                     message.data.initialization.ra.x = atof(buffer.buff + recv_tokens[8].start);
                                     message.data.initialization.ra.y = atof(buffer.buff + recv_tokens[10].start);
+                                    message.data.initialization.nb = recv_tokens[12].size;
                                     for (i = 0; i < recv_tokens[12].size; i++) {
                                         message.data.initialization.points[i].x = atof(buffer.buff + recv_tokens[15+i*5].start);
                                         message.data.initialization.points[i].y = atof(buffer.buff + recv_tokens[17+i*5].start);
