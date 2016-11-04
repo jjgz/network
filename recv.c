@@ -239,7 +239,7 @@ void network_recv_task() {
                                        continue;
                                    }
                                }
-                               if(!cmp_str_token("nt", 3) || !cmp_str_token("bd", 5))
+                               if(!cmp_str_token("nt", 3) || !cmp_str_token("ra", 5) || !cmp_str_token("bd", 11))
                                {
                                     message.type = NR_INVALID_ERROR;
                                     processing_add_recvmsg(&message);
@@ -249,9 +249,11 @@ void network_recv_task() {
                                    
                                     message.type = NR_INITIALIZE;
                                     message.data.initialization.nt = atoi(buffer.buff + recv_tokens[4].start);
-                                    for (i = 0; i < recv_tokens[5].size; i++) {
-                                        message.data.initialization.points[i].x = atof(buffer.buff + recv_tokens[8+i*5].start);
-                                        message.data.initialization.points[i].y = atof(buffer.buff + recv_tokens[10+i*5].start);
+                                    message.data.initialization.ra.x = atof(buffer.buff + recv_tokens[8].start);
+                                    message.data.initialization.ra.y = atof(buffer.buff + recv_tokens[10].start);
+                                    for (i = 0; i < recv_tokens[12].size; i++) {
+                                        message.data.initialization.points[i].x = atof(buffer.buff + recv_tokens[15+i*5].start);
+                                        message.data.initialization.points[i].y = atof(buffer.buff + recv_tokens[17+i*5].start);
                                     }
                                     processing_add_recvmsg(&message);
                                }

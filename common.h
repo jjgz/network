@@ -17,6 +17,8 @@ typedef struct {
 typedef struct {
     /// Number of targets.
     unsigned nt;
+    /// Number of targets.
+    BasicPoint ra;
     /// Arena borders.
     BasicPoint points[14];
 } MSGInitialize;
