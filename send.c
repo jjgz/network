@@ -51,7 +51,6 @@ void network_send_init() {
     messagebuff = messagebuffs[0];
     choose_buff = 0;
     network_send_queue = xQueueCreate(NETWORK_SEND_QUEUE_LEN, sizeof(NSMessage));
-    int_adc_init();
 }
 
 void network_send_task() {
@@ -346,6 +345,12 @@ void network_send_task() {
             {
                 buffer.buff = messagebuff;
                 buffer.length = sprintf(messagebuff, "{\"DebugGeordon\":\"ADC Reading: %u\"}", message.data.adc_reading);
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
             }break;
             case NS_GD_HALF_ROW:
             {
