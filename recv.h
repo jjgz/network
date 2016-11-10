@@ -32,16 +32,15 @@ typedef enum {
     NR_GRABBED,
     NR_DROPPED,
     NR_DISTANCE,
-<<<<<<< HEAD
     NR_DEBUG_JOE_TREAD,
-=======
     NR_TEST_RESET,
     NR_TEST_ROTATE,
     NR_TEST_MOVE,
     NR_TEST_ROW,
     NR_GD_REQ_HALF_ROW,
     NR_GD_REQ_PING,
->>>>>>> 79997d889e65263d5619511c9c00c816397a4d69
+    NR_DEBUG_JG_ULTRA,
+    NR_SENSORS,
 } NRType;
 
 typedef union {
@@ -49,30 +48,20 @@ typedef union {
     MSGMovement movement;
     uint8_t w_array[64];
 	double distance;
-<<<<<<< HEAD
-    TimerDebug tmr;
-    bool answer;
-    //bool left_mvmnt;
-    //bool right_mvmnt;
+    TimerJGDebug tm3r;
+    SensorReading ult_photo;    
     MSGDebugJoeTread debug_joe_tread;
-=======
     uint8_t rotate_val;
     uint8_t move_val;
     bool answer;
     TimerDebug tmr;
     uint8_t half_row;
->>>>>>> 79997d889e65263d5619511c9c00c816397a4d69
 } NRUnion;
 
 typedef struct {
     NRType type;
     NRUnion data;
 } NRMessage;
-<<<<<<< HEAD
-=======
-
-bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
->>>>>>> 79997d889e65263d5619511c9c00c816397a4d69
 
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
 void network_recv_init();

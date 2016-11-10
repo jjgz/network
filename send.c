@@ -51,9 +51,6 @@ void network_send_init() {
     messagebuff = messagebuffs[0];
     choose_buff = 0;
     network_send_queue = xQueueCreate(NETWORK_SEND_QUEUE_LEN, sizeof(NSMessage));
-    int_adc_init();
-    //DRV_ADC_Open();
-
 }
 
 void network_send_task() {
@@ -142,6 +139,20 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_JC_REQ_HALF_ROW:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"HDebugJosh\":%u}",
+                        message.data.row_req);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_C, PORTS_BIT_POS_1, 1);
+                }
+            }break;
             case NS_HALF_ROW:
             {
                 buffer.buff = messagebuff;
@@ -149,16 +160,30 @@ void network_send_task() {
                 unsigned i;
                 for (i = 0; i < 63; i++) {
                     // Assume its always < 100 for performance.
-                    messagebuff[buffer.length] = (message.data.w_array[i] / 10) + '0';
-                    messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
-                    messagebuff[buffer.length + 2] = ',';
-                    buffer.length += 3;
+                    unsigned h = message.data.w_array[i] / 10;
+                    if (h > 0) {
+                        messagebuff[buffer.length] = h + '0';
+                        messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
+                        messagebuff[buffer.length + 2] = ',';
+                        buffer.length += 3;
+                    } else {
+                        messagebuff[buffer.length] = (message.data.w_array[i] % 10) + '0';
+                        messagebuff[buffer.length + 1] = ',';
+                        buffer.length += 2;
+                    }
                 }
-                messagebuff[buffer.length] = (message.data.w_array[63] / 10) + '0';
-                messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
-                messagebuff[buffer.length + 2] = ']';
-                messagebuff[buffer.length + 3] = '}';
-                buffer.length += 4;
+                unsigned h = message.data.w_array[63] / 10;
+                if (h > 0) {
+                    messagebuff[buffer.length] = h + '0';
+                    messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
+                    buffer.length += 2;
+                } else {
+                    messagebuff[buffer.length] = (message.data.w_array[63] % 10) + '0';
+                    buffer.length += 1;
+                }
+                messagebuff[buffer.length] = ']';
+                messagebuff[buffer.length + 1] = '}';
+                buffer.length += 2;
                 
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
@@ -268,6 +293,12 @@ void network_send_task() {
                 buffer.length = strlen(buffer.buff);
                 wifly_int_send_buffer(&buffer);
             }break;
+            case NS_TEST_REQ_GRABBED:
+            {
+                buffer.buff = "\"GReqGrabbed\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
             case NS_GRABBED:
             {
                 buffer.buff = messagebuff;
@@ -281,6 +312,13 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_TEST_REQ_DROPPED:
+            {
+                buffer.buff = "\"DReqDropped\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            
             case NS_REQ_DROPPED:
             {
                 buffer.buff = "\"ReqDropped\"";
@@ -308,8 +346,19 @@ void network_send_task() {
                         message.data.tmr.speed_right,
                         message.data.tmr.tmr4,
                         message.data.tmr.tmr3,
-                        message.data.tmr.speed_left,
-                        message.data.tmr.speed_right);
+                        message.data.tmr.left_error,
+                        message.data.tmr.right_error);
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }
+            case NS_DEBUG_GEORDON_ADC:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"DebugGeordon\":\"ADC Reading: %u\"}", message.data.adc_reading);
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();
@@ -317,10 +366,16 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            case NS_DEBUG_GEORDON_ADC:
+            case NS_DEBUG_GEORDON_STR:
             {
                 buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"DebugGeordon\":\"ADC Reading: %u\"}", message.data.adc_reading);
+                buffer.length = sprintf(messagebuff, "{\"DebugGeordon\":\"%s\"}", message.data.dbstr);
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
             }break;
             case NS_GD_HALF_ROW:
             {
@@ -329,16 +384,31 @@ void network_send_task() {
                 unsigned i;
                 for (i = 0; i < 63; i++) {
                     // Assume its always < 100 for performance.
-                    messagebuff[buffer.length] = (message.data.w_array[i] / 10) + '0';
-                    messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
-                    messagebuff[buffer.length + 2] = ',';
-                    buffer.length += 3;
+                    unsigned h = message.data.w_array[i] / 10;
+                    if (h > 0) {
+                        messagebuff[buffer.length] = h + '0';
+                        messagebuff[buffer.length + 1] = (message.data.w_array[i] % 10) + '0';
+                        messagebuff[buffer.length + 2] = ',';
+                        buffer.length += 3;
+                    } else {
+                        messagebuff[buffer.length] = (message.data.w_array[i] % 10) + '0';
+                        messagebuff[buffer.length + 1] = ',';
+                        buffer.length += 2;
+                    }
                 }
-                messagebuff[buffer.length] = (message.data.w_array[63] / 10) + '0';
-                messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
-                messagebuff[buffer.length + 2] = ']';
-                messagebuff[buffer.length + 3] = '}';
-                buffer.length += 4;                
+                unsigned h = message.data.w_array[63] / 10;
+                if (h > 0) {
+                    messagebuff[buffer.length] = h + '0';
+                    messagebuff[buffer.length + 1] = (message.data.w_array[63] % 10) + '0';
+                    buffer.length += 2;
+                } else {
+                    messagebuff[buffer.length] = (message.data.w_array[63] % 10) + '0';
+                    buffer.length += 1;
+                }
+                messagebuff[buffer.length] = ']';
+                messagebuff[buffer.length + 1] = '}';
+                buffer.length += 2;
+                
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();
@@ -346,18 +416,6 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            case NS_DEBUG_OC:
-            {
-                buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"DebugJoeOC\": [%u,%u,%u,%u]}",
-                        message.data.tmr.l_spd, message.data.tmr.r_spd, message.data.tmr.tmr3, message.data.tmr.tmr4);
-                if (buffer.length > 0) {
-                    wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
-                } else {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }
-            }break;               
             case NS_ROVER_DATA:
             {
                 buffer.buff = messagebuff;
@@ -373,30 +431,13 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            //TODO:
-            //change this message to output both x and y distance
-            //maybe make official messages to output x and y and rotation and then
-            //route to client instead
-            case NS_DEBUG_JOE_DISTANCE:
-            {
-                buffer.buff = messagebuff;
-                buffer.length = sprintf(messagebuff, "{\"DebugJoeDistance\": [%u]}",
-                        message.data.distance);
-                
-                if (buffer.length > 0) {
-                    wifly_int_send_buffer(&buffer);
-                    next_messagebuff();
-                } else {
-                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-                }                
-            }break;
             case NS_TEST_ROW:
             {
                 buffer.buff = messagebuff;
                 buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u", message.data.w_array[0]);
                 int i, temp_byte;
                 int byte = buffer.length;
-                for (i = 1; i < 3; i++)
+                for (i = 1; i < 2; i++)
                 {
                     temp_byte = sprintf(messagebuff+byte, ",%u", message.data.w_array[i]);
                     byte += temp_byte;
@@ -435,5 +476,5 @@ void network_send_task() {
                 break;
         }
     }
+    
 }
-

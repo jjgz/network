@@ -47,6 +47,21 @@ typedef struct{
     double right_error;
 }TimerDebug;
 
+typedef struct{
+    double ultra;
+    double l_photo;
+    double r_photo;
+    double prev_lphoto;
+    double prev_rphoto;
+}SensorReading;
+
+typedef struct{
+    double dist_x;
+    double dist_y;
+    double turn_angle;
+    double angle_var;
+    double move_var;
+}ldr_move;
 typedef enum{
     NORTH = 1,
     SOUTH,
