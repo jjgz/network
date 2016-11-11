@@ -139,6 +139,15 @@ void network_recv_task() {
                      }  else if(cmp_str_token("GDReqPing", 0)) {
                          message.type = NR_GD_REQ_PING;
                          processing_add_recvmsg(&message);
+                     }  else if(cmp_str_token("GDBuild", 0)) {
+                         message.type = NR_GD_BUILD;
+                         processing_add_recvmsg(&message);
+                     }  else if(cmp_str_token("GDFinish", 0)) {
+                         message.type = NR_GD_FINISH;
+                         processing_add_recvmsg(&message);
+                     }  else if(cmp_str_token("GDAligned", 0)) {
+                         message.type = NR_GD_ALIGNED;
+                         processing_add_recvmsg(&message);
                      } else {
                          message.type = NR_INVALID_ERROR;
                          processing_add_recvmsg(&message);
@@ -246,7 +255,6 @@ void network_recv_task() {
                                }
                                else
                                {
-                                   
                                     message.type = NR_INITIALIZE;
                                     message.data.initialization.nt = atoi(buffer.buff + recv_tokens[4].start);
                                     message.data.initialization.ra.x = atof(buffer.buff + recv_tokens[8].start);

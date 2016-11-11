@@ -44,6 +44,9 @@ typedef enum {
             NR_REQ_HALF_ROW,
             NR_JC_REQ_HALF_ROW,
             NR_JC_HALF_ROW,
+            NR_GD_BUILD,
+            NR_GD_FINISH,
+            NR_GD_ALIGNED,
 } NRType;
 
 typedef union {
