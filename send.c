@@ -140,6 +140,27 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_REQ_PROXIMITY:
+            {
+                buffer.buff = "\"ReqProximity\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_PROXIMITY:
+            {
+                MSGProximity *proximity = &message.data.proximity;
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"Proximity\":{\"left_ir\":%f,\"right_ir\":%f}}",
+                        proximity->left_ir,
+                        proximity->right_ir);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
             case NS_REQ_HALF_ROW:
             {
                 buffer.buff = messagebuff;

@@ -52,11 +52,14 @@ typedef enum {
     NS_JC_REQ_HALF_ROW,
     NS_JG_REQ_ULTRA,
     NS_JG_REQ_SCAN_DONE,
+            NS_REQ_PROXIMITY,
+            NS_PROXIMITY,
 } NSType;
 
 typedef union {
     MSGNetstats netstats;
     MSGMovement movement;
+    MSGProximity proximity;
     uint8_t w_array[64];
     MSGPoint point;
     bool answer;

@@ -50,12 +50,15 @@ typedef enum {
     NR_GD_ALIGNED,
     NR_DEBUG_JG_ULTRA,
     NR_SENSORS,
+            NR_REQ_PROXIMITY,
+            NR_PROXIMITY,
 } NRType;
 
 typedef union {
     MSGPoint point;
     MSGInitialize initialization;
     MSGMovement movement;
+    MSGProximity proximity;
     uint8_t w_array[64];
 	double distance;
     TimerJGDebug tm3r;

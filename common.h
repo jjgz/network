@@ -89,4 +89,9 @@ typedef struct{
     MSGPoint point;
     uint32_t target;    
 }rover_debug;
+
+typedef struct {
+    double left_ir, right_ir;
+} MSGProximity;
+
 #endif

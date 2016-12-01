@@ -116,6 +116,9 @@ void network_recv_task() {
                      } else if(cmp_str_token(recv_req_movement, 0)) {
                          message.type = NR_REQ_MOVEMENT;
                          processing_add_recvmsg(&message);
+                     } else if(cmp_str_token("ReqProximity", 0)) {
+                         message.type = NR_REQ_PROXIMITY;
+                         processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_stopped, 0)) {
                          message.type = NR_REQ_STOPPED;
                          processing_add_recvmsg(&message);
@@ -202,17 +205,6 @@ void network_recv_task() {
                          //debug_loc(DEBUG_RECV_GRABBING)
                            if(recv_tokens[2].type == JSMN_OBJECT)
                            {
-                               int i;
-                               for(i = 0; i < 5; i++)
-                               {
-                                   if(recv_tokens[3+i*2].type != JSMN_STRING ||
-                                           recv_tokens[4+i*2].type != JSMN_PRIMITIVE)
-                                   {
-                                       message.type = NR_INVALID_ERROR;
-                                       processing_add_recvmsg(&message);
-                                       continue;
-                                   }   
-                               }
                                if(!cmp_str_token("x", 3) || !cmp_str_token("y", 5) || !cmp_str_token("v", 7) || !cmp_str_token("angle", 9) || !cmp_str_token("av", 11))
                                {
                                     message.type = NR_INVALID_ERROR;
@@ -226,6 +218,29 @@ void network_recv_task() {
                                     message.data.movement.v = atof(buffer.buff + recv_tokens[8].start);
                                     message.data.movement.angle = atof(buffer.buff + recv_tokens[10].start);
                                     message.data.movement.av = atof(buffer.buff + recv_tokens[12].start);
+                                    processing_add_recvmsg(&message);
+                               }
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Proximity", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_OBJECT)
+                           {
+                               if(!cmp_str_token("left_ir", 3) || !cmp_str_token("right_ir", 5))
+                               {
+                                    message.type = NR_INVALID_ERROR;
+                                    processing_add_recvmsg(&message);                                    
+                               }
+                               else
+                               {
+                                    message.type = NR_PROXIMITY;
+                                    message.data.proximity.left_ir = atof(buffer.buff + recv_tokens[4].start);
+                                    message.data.proximity.right_ir = atof(buffer.buff + recv_tokens[6].start);
                                     processing_add_recvmsg(&message);
                                }
                            }
