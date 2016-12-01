@@ -43,6 +43,20 @@ void network_send_add_message(NSMessage *message) {
     xQueueSendToBack(network_send_queue, message, portMAX_DELAY);
 }
 
+void network_send_add_message_isr(NSMessage *message) {
+    BaseType_t higher_priority_task_woken = pdFALSE;
+    // Attempt add the buffer from the isr to the queue.
+    if (xQueueSendToBackFromISR(network_send_queue, message, &higher_priority_task_woken)) {
+        // If a higher priority task was waiting for something on the queue, switch to it.
+        portEND_SWITCHING_ISR(higher_priority_task_woken);
+    // We didn't receive a buffer.
+    } else {
+        // Indicate on LD4 that we lost a packet.
+        // NOTE: LD4 conflicts with SDA2 (I2C).
+        SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+    }
+}
+
 void next_messagebuff() {
     messagebuff = messagebuffs[(choose_buff++) % TOTAL_MESSAGE_BUFFS];
 }
