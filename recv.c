@@ -87,6 +87,7 @@ void network_recv_task() {
             {
                 case JSMN_STRING:
                 {
+                    //SYS_PORTS_PinWrite(0, PORT_CHANNEL_C, PORTS_BIT_POS_1, 1);
                     const char recv_req_netstats[] = "ReqNetstats";
                     const char recv_heartbeat[] = "Heartbeat";
                     const char recv_req_name[] = "ReqName";
@@ -110,7 +111,7 @@ void network_recv_task() {
                          message.type = NR_TEST_RESET;
                          processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_name, 0)) {
-                         message.type = NR_REQ_NAME;
+                         message.type = NR_REQ_NAME;                         
                          processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_movement, 0)) {
                          message.type = NR_REQ_MOVEMENT;
@@ -179,7 +180,7 @@ void network_recv_task() {
                                        message.type = NR_INVALID_ERROR;
                                        processing_add_recvmsg(&message);
                                     }
-                                    else
+                                    else{
                                        message.data.w_array[i] = (uint8_t)atoi(buffer.buff + recv_tokens[3+i].start);
 //                                    if(recv_tokens[i].type != JSMN_PRIMITIVE)
 //                                    {
@@ -190,6 +191,7 @@ void network_recv_task() {
 //                                    {
 //                                        message.data.w_array[i].weight = (uint8_t)atoi(buffer.buff + recv_tokens[3+i].start);
 //                                    }
+                                    }
                                 }
                                 message.type = NR_TEST_ROW;
                                 processing_add_recvmsg(&message);
@@ -469,6 +471,35 @@ void network_recv_task() {
                             } else {
                                 message.type = NR_INVALID_ERROR;
                                  processing_add_recvmsg(&message);
+                            }
+                        }
+                        else if(cmp_str_token("DebugJoeTread",1))
+                        {
+                            if(recv_tokens[2].type == JSMN_ARRAY){
+                                message.type = NR_DEBUG_JOE_TREAD;
+                                message.data.debug_joe_tread.left = buffer.buff[recv_tokens[3].start] == 't';
+                                message.data.debug_joe_tread.right = buffer.buff[recv_tokens[4].start] == 't';
+                                processing_add_recvmsg(&message);
+                            }
+                            else
+                            {
+                                message.type = NR_INVALID_ERROR;
+                                processing_add_recvmsg(&message);
+                            }
+                        }
+                        else if (cmp_str_token("DebugJoeUltra",1))
+                        {
+                            if(recv_tokens[2].type == JSMN_ARRAY){
+                                message.type = NR_SENSORS;
+                                message.data.ult_photo.ultra = atof(buffer.buff + recv_tokens[3].start);
+                                message.data.ult_photo.l_photo = atof(buffer.buff + recv_tokens[4].start);
+                                message.data.ult_photo.r_photo= atof(buffer.buff +recv_tokens[5].start);
+                                processing_add_recvmsg(&message);
+                            }
+                            else
+                            {
+                                message.type = NR_INVALID_ERROR;
+                                processing_add_recvmsg(&message);
                             }
                         }
                         else

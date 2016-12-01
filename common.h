@@ -36,6 +36,20 @@ typedef struct {
 } MSGPoint;
 
 typedef struct{
+
+    uint32_t tmr3;
+    uint32_t tmr4;
+    uint32_t l_spd;
+    uint32_t r_spd;
+    uint32_t tmr_state;
+}TimerJGDebug;
+
+typedef struct{
+    bool left;
+    bool right;
+}MSGDebugJoeTread;
+
+typedef struct{
     uint8_t weight;
 }weight_array;
 
@@ -48,6 +62,21 @@ typedef struct{
     double right_error;
 }TimerDebug;
 
+typedef struct{
+    double ultra;
+    double l_photo;
+    double r_photo;
+    double prev_lphoto;
+    double prev_rphoto;
+}SensorReading;
+
+typedef struct{
+    double dist_x;
+    double dist_y;
+    double turn_angle;
+    double angle_var;
+    double move_var;
+}ldr_move;
 typedef enum{
     NORTH = 1,
     SOUTH,
@@ -58,7 +87,6 @@ typedef enum{
 typedef struct{
     orientation ori;
     MSGPoint point;
-    uint32_t target;
-    
+    uint32_t target;    
 }rover_debug;
 #endif
