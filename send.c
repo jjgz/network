@@ -43,6 +43,20 @@ void network_send_add_message(NSMessage *message) {
     xQueueSendToBack(network_send_queue, message, portMAX_DELAY);
 }
 
+void network_send_add_message_isr(NSMessage *message) {
+    BaseType_t higher_priority_task_woken = pdFALSE;
+    // Attempt add the buffer from the isr to the queue.
+    if (xQueueSendToBackFromISR(network_send_queue, message, &higher_priority_task_woken)) {
+        // If a higher priority task was waiting for something on the queue, switch to it.
+        portEND_SWITCHING_ISR(higher_priority_task_woken);
+    // We didn't receive a buffer.
+    } else {
+        // Indicate on LD4 that we lost a packet.
+        // NOTE: LD4 conflicts with SDA2 (I2C).
+        SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+    }
+}
+
 void next_messagebuff() {
     messagebuff = messagebuffs[(choose_buff++) % TOTAL_MESSAGE_BUFFS];
 }
@@ -51,7 +65,6 @@ void network_send_init() {
     messagebuff = messagebuffs[0];
     choose_buff = 0;
     network_send_queue = xQueueCreate(NETWORK_SEND_QUEUE_LEN, sizeof(NSMessage));
-    int_adc_init();
 }
 
 void network_send_task() {
@@ -119,6 +132,27 @@ void network_send_task() {
                         movement->v,
                         movement->angle,
                         movement->av);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_REQ_PROXIMITY:
+            {
+                buffer.buff = "\"ReqProximity\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_PROXIMITY:
+            {
+                MSGProximity *proximity = &message.data.proximity;
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"Proximity\":{\"left_ir\":%f,\"right_ir\":%f}}",
+                        proximity->left_ir,
+                        proximity->right_ir);
                 
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
@@ -361,11 +395,28 @@ void network_send_task() {
                 } else {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
-            }
+            }break;
             case NS_DEBUG_GEORDON_ADC:
             {
                 buffer.buff = messagebuff;
                 buffer.length = sprintf(messagebuff, "{\"DebugGeordon\":\"ADC Reading: %u\"}", message.data.adc_reading);
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
+            case NS_DEBUG_GEORDON_STR:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"DebugGeordon\":\"%s\"}", message.data.dbstr);
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
             }break;
             case NS_GD_HALF_ROW:
             {
@@ -398,7 +449,6 @@ void network_send_task() {
                 messagebuff[buffer.length] = ']';
                 messagebuff[buffer.length + 1] = '}';
                 buffer.length += 2;
-                
                 if (buffer.length > 0) {
                     wifly_int_send_buffer(&buffer);
                     next_messagebuff();
@@ -406,6 +456,18 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_DEBUG_OC:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"DebugJoeOC\": [%u,%u,%u,%u]}",
+                        message.data.tm3r.l_spd, message.data.tm3r.r_spd, message.data.tm3r.tmr3, message.data.tm3r.tmr4);
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;               
             case NS_ROVER_DATA:
             {
                 buffer.buff = messagebuff;
@@ -420,6 +482,23 @@ void network_send_task() {
                 } else {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
+            }break;
+            //TODO:
+            //change this message to output both x and y distance
+            //maybe make official messages to output x and y and rotation and then
+            //route to client instead
+            case NS_DEBUG_JOE_DISTANCE:
+            {
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"DebugJoeDistance\": [%u]}",
+                        message.data.distance);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }                
             }break;
             case NS_TEST_ROW:
             {
@@ -445,26 +524,9 @@ void network_send_task() {
                 buffer.length = strlen(buffer.buff);
                 wifly_int_send_buffer(&buffer);
             }break;
-            // TODO: Look for optimal way to construct the buffer instead of writing out all 64 values
-            // For now...just send over 4
-//            case NS_ROWS:
-//            {
-//                buffer.buff = messagebuff;
-//                buffer.length = sprintf(messagebuff, "{\"RDebugJosh\":[%u, %u, %u, %u]}", 
-//                        message.data.rd.point.x, 
-//                        message.data.rd.point.y,
-//                        message.data.rd.ori,
-//                        message.data.rd.target);
-//                if (buffer.length > 0) {
-//                    wifly_int_send_buffer(&buffer);
-//                    next_messagebuff();
-//                } else {
-//                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
-//                }
-//            }break;
             default:
                 break;
         }
     }
-    
 }
+

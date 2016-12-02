@@ -28,6 +28,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 #include "debug.h"
 #include "network/jsmn/jsmn.h"
 #include <string.h>
+#include <stdlib.h>
 #define NETWORK_RECV_QUEUE_LEN 14
 #define cmp_str_token(sname, token) sizeof(sname)-1 == base_str_len && !strncmp(sname, buffer.buff + recv_tokens[token].start, sizeof(sname)-1)
 
@@ -86,6 +87,7 @@ void network_recv_task() {
             {
                 case JSMN_STRING:
                 {
+                    //SYS_PORTS_PinWrite(0, PORT_CHANNEL_C, PORTS_BIT_POS_1, 1);
                     const char recv_req_netstats[] = "ReqNetstats";
                     const char recv_heartbeat[] = "Heartbeat";
                     const char recv_req_name[] = "ReqName";
@@ -109,10 +111,13 @@ void network_recv_task() {
                          message.type = NR_TEST_RESET;
                          processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_name, 0)) {
-                         message.type = NR_REQ_NAME;
+                         message.type = NR_REQ_NAME;                         
                          processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_movement, 0)) {
                          message.type = NR_REQ_MOVEMENT;
+                         processing_add_recvmsg(&message);
+                     } else if(cmp_str_token("ReqProximity", 0)) {
+                         message.type = NR_REQ_PROXIMITY;
                          processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_stopped, 0)) {
                          message.type = NR_REQ_STOPPED;
@@ -138,6 +143,15 @@ void network_recv_task() {
                      }  else if(cmp_str_token("GDReqPing", 0)) {
                          message.type = NR_GD_REQ_PING;
                          processing_add_recvmsg(&message);
+                     }  else if(cmp_str_token("GDBuild", 0)) {
+                         message.type = NR_GD_BUILD;
+                         processing_add_recvmsg(&message);
+                     }  else if(cmp_str_token("GDFinish", 0)) {
+                         message.type = NR_GD_FINISH;
+                         processing_add_recvmsg(&message);
+                     }  else if(cmp_str_token("GDAligned", 0)) {
+                         message.type = NR_GD_ALIGNED;
+                         processing_add_recvmsg(&message);
                      } else {
                          message.type = NR_INVALID_ERROR;
                          processing_add_recvmsg(&message);
@@ -154,6 +168,7 @@ void network_recv_task() {
                         {
                              if(recv_tokens[2].type == JSMN_ARRAY)
                             {
+
                                 message.data.edge.left = (uint8_t)atoi(buffer.buff + recv_tokens[3].start);
                                 message.data.edge.mid = (uint8_t)atoi(buffer.buff + recv_tokens[4].start);
                                 message.data.edge.right = (uint8_t)atoi(buffer.buff + recv_tokens[5].start);
@@ -169,17 +184,6 @@ void network_recv_task() {
                          //debug_loc(DEBUG_RECV_GRABBING)
                            if(recv_tokens[2].type == JSMN_OBJECT)
                            {
-                               int i;
-                               for(i = 0; i < 5; i++)
-                               {
-                                   if(recv_tokens[3+i*2].type != JSMN_STRING ||
-                                           recv_tokens[4+i*2].type != JSMN_PRIMITIVE)
-                                   {
-                                       message.type = NR_INVALID_ERROR;
-                                       processing_add_recvmsg(&message);
-                                       continue;
-                                   }   
-                               }
                                if(!cmp_str_token("x", 3) || !cmp_str_token("y", 5) || !cmp_str_token("v", 7) || !cmp_str_token("angle", 9) || !cmp_str_token("av", 11))
                                {
                                     message.type = NR_INVALID_ERROR;
@@ -193,6 +197,69 @@ void network_recv_task() {
                                     message.data.movement.v = atof(buffer.buff + recv_tokens[8].start);
                                     message.data.movement.angle = atof(buffer.buff + recv_tokens[10].start);
                                     message.data.movement.av = atof(buffer.buff + recv_tokens[12].start);
+                                    processing_add_recvmsg(&message);
+                               }
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Proximity", 1))
+                        {
+                           if(recv_tokens[2].type == JSMN_OBJECT)
+                           {
+                               if(!cmp_str_token("left_ir", 3) || !cmp_str_token("right_ir", 5))
+                               {
+                                    message.type = NR_INVALID_ERROR;
+                                    processing_add_recvmsg(&message);                                    
+                               }
+                               else
+                               {
+                                    message.type = NR_PROXIMITY;
+                                    message.data.proximity.left_ir = atof(buffer.buff + recv_tokens[4].start);
+                                    message.data.proximity.right_ir = atof(buffer.buff + recv_tokens[6].start);
+                                    processing_add_recvmsg(&message);
+                               }
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Initialize", 1))
+                        {
+                         //debug_loc(DEBUG_RECV_GRABBING)
+                           if(recv_tokens[2].type == JSMN_OBJECT)
+                           {
+                               int i;
+                               for(i = 0; i < 2; i++)
+                               {
+                                   if(recv_tokens[3+i*2].type != JSMN_STRING)
+                                   {
+                                       message.type = NR_INVALID_ERROR;
+                                       processing_add_recvmsg(&message);
+                                       continue;
+                                   }
+                               }
+                               if(!cmp_str_token("nt", 3) || !cmp_str_token("ra", 5) || !cmp_str_token("bd", 11))
+                               {
+                                    message.type = NR_INVALID_ERROR;
+                                    processing_add_recvmsg(&message);
+                               }
+                               else
+                               {
+                                    message.type = NR_INITIALIZE;
+                                    message.data.initialization.nt = atoi(buffer.buff + recv_tokens[4].start);
+                                    message.data.initialization.ra.x = atof(buffer.buff + recv_tokens[8].start);
+                                    message.data.initialization.ra.y = atof(buffer.buff + recv_tokens[10].start);
+                                    message.data.initialization.nb = recv_tokens[12].size;
+                                    for (i = 0; i < recv_tokens[12].size; i++) {
+                                        message.data.initialization.points[i].x = atof(buffer.buff + recv_tokens[15+i*5].start);
+                                        message.data.initialization.points[i].y = atof(buffer.buff + recv_tokens[17+i*5].start);
+                                    }
                                     processing_add_recvmsg(&message);
                                }
                            }
@@ -375,6 +442,35 @@ void network_recv_task() {
                             } else {
                                 message.type = NR_INVALID_ERROR;
                                  processing_add_recvmsg(&message);
+                            }
+                        }
+                        else if(cmp_str_token("DebugJoeTread",1))
+                        {
+                            if(recv_tokens[2].type == JSMN_ARRAY){
+                                message.type = NR_DEBUG_JOE_TREAD;
+                                message.data.debug_joe_tread.left = buffer.buff[recv_tokens[3].start] == 't';
+                                message.data.debug_joe_tread.right = buffer.buff[recv_tokens[4].start] == 't';
+                                processing_add_recvmsg(&message);
+                            }
+                            else
+                            {
+                                message.type = NR_INVALID_ERROR;
+                                processing_add_recvmsg(&message);
+                            }
+                        }
+                        else if (cmp_str_token("DebugJoeUltra",1))
+                        {
+                            if(recv_tokens[2].type == JSMN_ARRAY){
+                                message.type = NR_SENSORS;
+                                message.data.ult_photo.ultra = atof(buffer.buff + recv_tokens[3].start);
+                                message.data.ult_photo.l_photo = atof(buffer.buff + recv_tokens[4].start);
+                                message.data.ult_photo.r_photo= atof(buffer.buff +recv_tokens[5].start);
+                                processing_add_recvmsg(&message);
+                            }
+                            else
+                            {
+                                message.type = NR_INVALID_ERROR;
+                                processing_add_recvmsg(&message);
                             }
                         }
                         else

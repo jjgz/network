@@ -15,6 +15,7 @@
 typedef enum {
     NR_INVALID_ERROR,
     NR_QUERY_STATS,
+    NR_INITIALIZE,
     NR_REQ_NAME,
     NR_REQ_MOVEMENT,
     NR_REQ_STOPPED,
@@ -32,6 +33,7 @@ typedef enum {
     NR_GRABBED,
     NR_DROPPED,
     NR_DISTANCE,
+    NR_DEBUG_JOE_TREAD,
     NR_TEST_RESET,
     NR_TEST_ROTATE,
     NR_TEST_MOVE,
@@ -40,16 +42,28 @@ typedef enum {
     NR_GD_REQ_PING,
     NR_REQ_JOSH_POINTS,
     NR_HALF_ROW,
-            NR_REQ_HALF_ROW,
-            NR_JC_REQ_HALF_ROW,
-            NR_JC_HALF_ROW,
+    NR_REQ_HALF_ROW,
+    NR_JC_REQ_HALF_ROW,
+    NR_JC_HALF_ROW,
+    NR_GD_BUILD,
+    NR_GD_FINISH,
+    NR_GD_ALIGNED,
+    NR_DEBUG_JG_ULTRA,
+    NR_SENSORS,
+            NR_REQ_PROXIMITY,
+            NR_PROXIMITY,
 } NRType;
 
 typedef union {
     MSGPoint point;
+    MSGInitialize initialization;
     MSGMovement movement;
+    MSGProximity proximity;
     uint8_t w_array[64];
 	double distance;
+    TimerJGDebug tm3r;
+    SensorReading ult_photo;    
+    MSGDebugJoeTread debug_joe_tread;
     uint8_t rotate_val;
     uint8_t move_val;
     bool answer;
@@ -64,7 +78,6 @@ typedef struct {
 } NRMessage;
 
 bool network_recv_add_buffer_from_isr(CharBuffer *buffer);
-
 void network_recv_init();
 void network_recv_task();
 void jsmn_prim(NRMessage msg, CharBuffer buff);
