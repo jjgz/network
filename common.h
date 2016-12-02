@@ -33,6 +33,11 @@ typedef struct{
     double right_error;
 }TimerDebug;
 
+typedef struct{
+    uint8_t left;
+    uint8_t mid;
+    uint8_t right;
+}edge_detect;
 typedef enum{
     NORTH = 1,
     SOUTH,

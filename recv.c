@@ -34,7 +34,7 @@ SUBSTITUTE GOODS, TECHNOLOGY, SERVICES, OR ANY CLAIMS BY THIRD PARTIES
 QueueHandle_t network_recv_queue;
 
 jsmn_parser recv_parser;
-jsmntok_t recv_tokens[96];
+jsmntok_t recv_tokens[120];
 Point recv_point_ring_buffers[PROCESSING_QUEUE_LEN+2][20];
 unsigned recv_ring_buffer_pos;
 
@@ -150,39 +150,18 @@ void network_recv_task() {
                     int base_str_len = recv_tokens[1].end - recv_tokens[1].start;
                     if(recv_tokens[1].type == JSMN_STRING)
                     {
-                        if(cmp_str_token("TestRow", 1))
+                        if(cmp_str_token("EdgeDetect", 1))
                         {
-                            if(recv_tokens[2].type == JSMN_ARRAY)
+                             if(recv_tokens[2].type == JSMN_ARRAY)
                             {
-                                //TODO: create message type...only send like the first index over to see if it works and then send that back to client
-                                //then you can do error checking things
-                                //look up the JSMN Documentation to see how to handle arrays
-                                //for(i = 0; i < 64; i++) or you can just do 4 at a time
-                                //  if(recv_tokes[3].type != JSMN_PRIMITIVE) then send error
-                                //  else - row_vals[i] = atoi(buffer.buff + recv_tokens[3+i])
-                                //
-                                int i;
-                                for(i = 0; i < 32; i++)
-                                {
-                                    if(recv_tokens[3+i].type != JSMN_PRIMITIVE)
-                                    {
-                                       message.type = NR_INVALID_ERROR;
-                                       processing_add_recvmsg(&message);
-                                    }
-                                    else
-                                       message.data.w_array[i] = (uint8_t)atoi(buffer.buff + recv_tokens[3+i].start);
-//                                    if(recv_tokens[i].type != JSMN_PRIMITIVE)
-//                                    {
-//                                       message.type = NR_INVALID_ERROR;
-//                                       processing_add_recvmsg(&message);
-//                                    }
-//                                    else
-//                                    {
-//                                        message.data.w_array[i].weight = (uint8_t)atoi(buffer.buff + recv_tokens[3+i].start);
-//                                    }
-                                }
-                                message.type = NR_TEST_ROW;
+                                message.data.edge.left = (uint8_t)atoi(buffer.buff + recv_tokens[3].start);
+                                message.data.edge.mid = (uint8_t)atoi(buffer.buff + recv_tokens[4].start);
+                                message.data.edge.right = (uint8_t)atoi(buffer.buff + recv_tokens[5].start);
+                                message.type = NR_EDGE_DETECT;
                                 processing_add_recvmsg(&message);
+                            } else {
+                                message.type = NR_INVALID_ERROR;
+                                 processing_add_recvmsg(&message);
                             }
                         }
                         else if(cmp_str_token("Movement", 1))//path
@@ -240,19 +219,6 @@ void network_recv_task() {
                         {
                            if(recv_tokens[2].type == JSMN_PRIMITIVE){
                                message.type = NR_IN_POS;
-                               message.data.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
-                              processing_add_recvmsg(&message);
-                           }
-                           else
-                           {
-                              message.type = NR_INVALID_ERROR;
-                              processing_add_recvmsg(&message);
-                           }
-                        }
-                        else if(cmp_str_token("EdgeDetect", 1))
-                        {
-                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
-                               message.type = NR_EDGE_DETECT;
                                message.data.answer = (*(buffer.buff + recv_tokens[2].start) == 't');
                               processing_add_recvmsg(&message);
                            }
@@ -369,16 +335,6 @@ void network_recv_task() {
                         }
                         else if(cmp_str_token("JCHalfRow", 1))
                         {
-//                           if(recv_tokens[2].type == JSMN_PRIMITIVE){
-//                               message.type = NR_JC_HALF_ROW;
-//                               message.data.half_row = atoi(buffer.buff + recv_tokens[2].start);
-//                              processing_add_recvmsg(&message);
-//                           }
-//                           else
-//                           {
-//                              message.type = NR_INVALID_ERROR;
-//                              processing_add_recvmsg(&message);
-//                           }
                            if(recv_tokens[2].type == JSMN_ARRAY)
                             {
                                 int i;

@@ -231,9 +231,15 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
-            case NS_REQ_EDGE_DETECT:
+            case NS_REQ_EDGE_DETECT_LEFT:
             {
-                buffer.buff = "\"ReqEdgeDetect\"";
+                buffer.buff = "\"ReqEdgeDetectLeft\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_REQ_EDGE_DETECT_RIGHT:
+            {
+                buffer.buff = "\"ReqEdgeDetectRight\"";
                 buffer.length = strlen(buffer.buff);
                 wifly_int_send_buffer(&buffer);
             }break;

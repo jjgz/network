@@ -54,6 +54,7 @@ typedef union {
     uint8_t move_val;
     bool answer;
     TimerDebug tmr;
+    edge_detect edge;
     uint8_t half_row;
 } NRUnion;
 
