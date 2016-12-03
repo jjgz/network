@@ -140,6 +140,30 @@ void network_send_task() {
                     SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
                 }
             }break;
+            case NS_REQ_ASSUMED:
+            {
+                buffer.buff = "\"ReqAssumed\"";
+                buffer.length = strlen(buffer.buff);
+                wifly_int_send_buffer(&buffer);
+            }break;
+            case NS_ASSUMED:
+            {
+                MSGMovement *movement = &message.data.movement;
+                buffer.buff = messagebuff;
+                buffer.length = sprintf(messagebuff, "{\"Assumed\":{\"x\":%f,\"y\":%f,\"v\":%f,\"angle\":%f,\"av\":%f}}",
+                        movement->x,
+                        movement->y,
+                        movement->v,
+                        movement->angle,
+                        movement->av);
+                
+                if (buffer.length > 0) {
+                    wifly_int_send_buffer(&buffer);
+                    next_messagebuff();
+                } else {
+                    SYS_PORTS_PinWrite(0, PORT_CHANNEL_A, PORTS_BIT_POS_3, 1);
+                }
+            }break;
             case NS_REQ_PROXIMITY:
             {
                 buffer.buff = "\"ReqProximity\"";

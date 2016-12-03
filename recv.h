@@ -18,6 +18,8 @@ typedef enum {
     NR_INITIALIZE,
     NR_REQ_NAME,
     NR_REQ_MOVEMENT,
+    NR_REQ_ASSUMED,
+    NR_ASSUMED,
     NR_REQ_STOPPED,
     NR_REQ_IN_POS,
     NR_REQ_EDGE_DETECT,

@@ -119,6 +119,9 @@ void network_recv_task() {
                      } else if(cmp_str_token("ReqProximity", 0)) {
                          message.type = NR_REQ_PROXIMITY;
                          processing_add_recvmsg(&message);
+                     } else if(cmp_str_token("ReqAssumed", 0)) {
+                         message.type = NR_REQ_ASSUMED;
+                         processing_add_recvmsg(&message);
                      } else if(cmp_str_token(recv_req_stopped, 0)) {
                          message.type = NR_REQ_STOPPED;
                          processing_add_recvmsg(&message);
@@ -195,6 +198,33 @@ void network_recv_task() {
                                else
                                {
                                     message.type = NR_MOVEMENT;  
+                                    message.data.movement.x = atof(buffer.buff + recv_tokens[4].start);
+                                    message.data.movement.y = atof(buffer.buff + recv_tokens[6].start);
+                                    message.data.movement.v = atof(buffer.buff + recv_tokens[8].start);
+                                    message.data.movement.angle = atof(buffer.buff + recv_tokens[10].start);
+                                    message.data.movement.av = atof(buffer.buff + recv_tokens[12].start);
+                                    processing_add_recvmsg(&message);
+                               }
+                           }
+                           else
+                           {
+                              message.type = NR_INVALID_ERROR;
+                              processing_add_recvmsg(&message);
+                           }
+                        }
+                        else if(cmp_str_token("Assumed", 1))//path
+                        {
+                         //debug_loc(DEBUG_RECV_GRABBING)
+                           if(recv_tokens[2].type == JSMN_OBJECT)
+                           {
+                               if(!cmp_str_token("x", 3) || !cmp_str_token("y", 5) || !cmp_str_token("v", 7) || !cmp_str_token("angle", 9) || !cmp_str_token("av", 11))
+                               {
+                                    message.type = NR_INVALID_ERROR;
+                                    processing_add_recvmsg(&message);                                    
+                               }
+                               else
+                               {
+                                    message.type = NR_ASSUMED;  
                                     message.data.movement.x = atof(buffer.buff + recv_tokens[4].start);
                                     message.data.movement.y = atof(buffer.buff + recv_tokens[6].start);
                                     message.data.movement.v = atof(buffer.buff + recv_tokens[8].start);

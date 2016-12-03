@@ -18,6 +18,8 @@ typedef enum {
     NS_SEND_NAME_JOE,
     NS_REQ_MOVEMENT,
     NS_MOVEMENT,
+    NS_REQ_ASSUMED,
+    NS_ASSUMED,
     NS_REQ_TARGETS,
     NS_TARGETS,
     NS_REQ_HALF_ROW,
