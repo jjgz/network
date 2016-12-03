@@ -42,6 +42,9 @@ typedef struct{
     uint32_t l_spd;
     uint32_t r_spd;
     uint32_t tmr_state;
+    double dist_x;
+    double dist_y;
+    double angle;
 }TimerJGDebug;
 
 typedef struct{
@@ -74,6 +77,8 @@ typedef struct{
     double r_photo;
     double prev_lphoto;
     double prev_rphoto;
+    double l_ir;
+    double r_ir;
 }SensorReading;
 
 typedef struct{
