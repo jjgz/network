@@ -48,6 +48,7 @@ typedef enum {
     NR_GD_BUILD,
     NR_GD_FINISH,
     NR_GD_ALIGNED,
+    NR_GD_START_ALIGN,
     NR_DEBUG_JG_ULTRA,
     NR_SENSORS,
             NR_REQ_PROXIMITY,
@@ -68,6 +69,7 @@ typedef union {
     uint8_t move_val;
     bool answer;
     TimerDebug tmr;
+    edge_detect edge;
     uint8_t half_row;
 } NRUnion;
 

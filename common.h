@@ -66,6 +66,12 @@ typedef struct{
 }TimerDebug;
 
 typedef struct{
+    uint8_t left;
+    uint8_t mid;
+    uint8_t right;
+}edge_detect;
+
+typedef struct{
     double ultra;
     double l_photo;
     double r_photo;
@@ -82,6 +88,7 @@ typedef struct{
     double angle_var;
     double move_var;
 }ldr_move;
+
 typedef enum{
     NORTH = 1,
     SOUTH,
