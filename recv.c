@@ -152,6 +152,9 @@ void network_recv_task() {
                      }  else if(cmp_str_token("GDAligned", 0)) {
                          message.type = NR_GD_ALIGNED;
                          processing_add_recvmsg(&message);
+                     }  else if(cmp_str_token("GDStartAlign", 0)) {
+                         message.type = NR_GD_START_ALIGN;
+                         processing_add_recvmsg(&message);
                      } else {
                          message.type = NR_INVALID_ERROR;
                          processing_add_recvmsg(&message);
